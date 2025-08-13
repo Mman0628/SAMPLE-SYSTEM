@@ -68,7 +68,7 @@
                 </v-card>
             </v-col> 
 
-            <!-- <v-col cols="8"> 
+            <v-col cols="8"> 
                 <v-card-actions>
                 <v-spacer/>
                 <v-text-field
@@ -86,8 +86,8 @@
                     <thead>
                         <tr>
                             <th>Co Code</th>
-                            <th>Company Name</th>
-                            <th>Co Alias</th>
+                            <th>Project Name</th>
+                            <th>Project Alias</th>
                             <th>bldg_street</th>
                             <th class="text-center"> Actions</th>
                         </tr>
@@ -113,7 +113,7 @@
                         </tr>
                     </tbody>
                 </v-table> 
-            </v-col> -->
+            </v-col>
         </v-row>
     </v-container>
     <v-dialog v-model="projectDialog" max-width="20%" persistent>

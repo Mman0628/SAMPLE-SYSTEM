@@ -10,10 +10,10 @@
             height="50"  
             max-width="80"
           />
-          <v-toolbar-title>My Sample App </v-toolbar-title> 
+          <v-toolbar-title>OOA Solutions Inc.</v-toolbar-title> 
         </div> 
-        <v-btn @click="test">CLICK ME</v-btn>
-        <p>{{count}}</p>
+        <!-- <v-btn @click="test">CLICK ME</v-btn>
+        <p>{{count}}</p> -->
     </v-app-bar>
 
     <v-navigation-drawer    
@@ -23,19 +23,22 @@
     rail
     color="#CFD8DC"
     dark
+    elevation="3"
     >
       <v-container class="d-flex-row" >
-        <v-container max-height="90" class="d-flex" style="align-items: center; "> 
-          <v-avatar size="60" icon="mdi-account-circle"></v-avatar>
-          <span style="font-size: 12px;">User Info</span>  
+        <v-container max-height="90" class="d-flex align-center"> 
+          <v-avatar class="mr-2">
+            <v-img src="../src/assets/profile.png" ></v-img>
+          </v-avatar>
+          <span style="font-size: 12px;">User Information</span>  
         </v-container>
         <v-divider></v-divider> 
         
         <v-list v-for="(route, index) in routes" :key="index" density="compact" nav>      
-          <v-list-item link :to="route.path" @click="isClickedSystemManager(route)" :prepend-avatar="getIcon(route.icon)" :title="route.name"></v-list-item> 
+          <v-list-item link :to="route.path" @click="toggleFiles(route)" :prepend-avatar="getIcon(route.icon)" :title="route.name"></v-list-item>  
 
-          <!-- nested -->
-          <v-list v-if="isSystemManagerOpen" dense>
+          <!-- nested child item-->
+          <v-list v-if="openGroups.includes(route.name)" dense>
             <v-list-item 
             v-for="(child, childIndex) in route.children" :key="childIndex" 
             link 
@@ -51,7 +54,7 @@
                 </v-col>
               </v-row>
             </v-list-item>
-          </v-list>
+          </v-list> 
         </v-list> 
       </v-container> 
     </v-navigation-drawer> 
@@ -69,8 +72,8 @@ export default {
   name: 'App', 
 
   data: () => ({ 
-    drawer: false,
-    isSystemManagerOpen: false,
+    drawer: false, 
+    openGroups:[]
   }), 
 
   methods: {
@@ -88,9 +91,13 @@ export default {
       }  
     },
 
-    isClickedSystemManager(route){
-      if(route.name == 'System Manager'){
-        this.isSystemManagerOpen = !this.isSystemManagerOpen
+    toggleFiles(route){  
+      const index = this.openGroups.indexOf(route.name); 
+      
+      if (index > -1) { 
+        this.openGroups.splice(index, 1);
+      }else { 
+        this.openGroups.push(route.name);
       }
     }, 
 
@@ -106,30 +113,19 @@ export default {
       return [
         {name:'System Manager', path:'/', icon:'client_profile.png',
           children:[
-            {name:"Company Files", path:'company_files', icon:'mdi-briefcase-search'},
-            {name:"Project Files", path:'project_files', icon:'mdi-card-search'},
-            {name:"Customer Files", path:'customer_files', icon:'mdi-account-search'},
-            {name:"Security Files", path:'security_files', icon:'mdi-shield-search'},
+            {name:"Company Files", path:'/company_files', icon:'mdi-briefcase-search'},
+            {name:"Project Files", path:'/project_files', icon:'mdi-card-search'},
+            {name:"Customer Files", path:'/customer_files', icon:'mdi-account-search'},
+            {name:"Security Files", path:'/security_files', icon:'mdi-shield-search'},
           ]
         },
-        // { name: 'Search', path: 'a' ,icon:'search.png', 
-        //   children:[
-        //     {name:"Buyer's Name", path:'test1', icon:'mdi-account-search'},
-        //     {name:'Official Receipt (OR)', path:'test2', icon:'mdi-receipt'},
-        //     {name:'Request Expenses (for Approval RQST)', path:'test2', icon:'mdi-cash-register'},
-        //     {name:'Request Batch Number (RBN)', path:'test2', icon:'mdi-file-document-edit'},
-        //     {name:'Disbursement Number (DIS)', path:'test2', icon:'mdi-file-document-multiple'},
-        //     {name:'Payable Voucher (PVN)', path:'test2', icon:'mdi-cash-minus'},
-        //     {name:'Cheque Voucher (CVN)', path:'test2', icon:'mdi-cash-check'},
-        //     {name:'Billing', path:'test2', icon:'mdi-cash-usd-outline'},
-        //     {name:'Cash Returned', path:'test2', icon:'mdi-cash-refund'},
-        //     {name:'Compliance Report', path:'test2', icon:'mdi-file-alert'},
-        //   ]
-        // },
-        // { name: 'OOASI', path: '/about', icon:'ooasi.png' }, 
-        // { name: 'BIR', path: '/b', icon:'bir.png' },  
-        // { name: 'RD', path: '/c', icon:'rd.png' },  
-        // { name: 'AO', path: '/d', icon:'ao.png' },  
+        {name:'TCT Manager', path:'/tct_manager', icon:'tct.png',
+          children:[
+            {name:"Client Master File", path:'/client_master_file', icon:''},
+            {name:"Developer Master File", path:'', icon:''},
+            {name:"Project Master File", path:'', icon:''}, 
+          ]
+        },
       ]
     }
   },

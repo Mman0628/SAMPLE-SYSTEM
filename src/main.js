@@ -6,7 +6,7 @@ import vuetify from './plugins/vuetify';
 import { loadFonts } from './plugins/webfontloader';
 import Swal from 'sweetalert2';
 
-loadFonts();
+loadFonts(); 
 
 const app = createApp(App);
 
@@ -17,6 +17,8 @@ app.use(router)
   .use(store)
   .use(vuetify)
   .mount('#app'); 
+
+
 
 // import { createApp } from 'vue'
 // import App from './App.vue'
