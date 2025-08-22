@@ -1,3 +1,5 @@
+
+process.env.VUE_CLI_SERVICE_CONFIG_PATH = './vue.config.js';
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
@@ -10,6 +12,9 @@ module.exports = defineConfig({
   devServer: {
     host: '192.168.1.174',
     port: 8080, 
-    allowedHosts: 'all', 
-  },
+    allowedHosts: 'all',  
+    client: {
+      overlay:  false 
+    }
+  }, 
 })

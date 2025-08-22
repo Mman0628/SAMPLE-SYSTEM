@@ -1,0 +1,82 @@
+.sweetalert-popup {
+  z-index: 99999 !important;
+}
+.swal2-overlay {
+  z-index: 999998 !important; 
+}
+.v-dialog__content {
+  z-index: 1000 !important;
+}
+.v-overlay {
+  z-index: 999 !important; 
+}
+
+/**font size */
+::v-deep(.small-input .v-label) {
+  font-size: 11px;
+}
+
+/**select */
+::v-deep(.small-select .v-field__input) {
+  font-size: 11px;
+  padding: 2px 6px !important; 
+}
+
+/* Target label */
+::v-deep(.small-select .v-label) {
+  font-size: 11px;
+}
+
+/* Optionally reduce height of the whole field */
+::v-deep(.small-select .v-field) {
+  min-height: 28px !important;
+  padding: 0px !important;
+}
+
+/**table */
+.v-table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+} 
+
+::v-deep(.v-table thead th),
+::v-deep(.v-table tbody td) {
+  border-right: 1px solid #ccc;
+}
+
+::v-deep(.v-table thead th:last-child),
+::v-deep(.v-table tbody td:last-child) {
+  border-right: none;
+}
+
+.v-table thead tr {
+  background-color: #9E9E9E;    
+}
+
+::v-deep(.v-table thead th){      
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #333; 
+  text-transform: uppercase;
+}
+
+.v-table tbody td { 
+  padding: 12px 16px;
+  font-size: 0.95rem; 
+  color: #333;
+}
+
+.v-table tbody tr:hover {
+  background-color: #fafafa;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.v-table tfoot td {
+  padding: 12px 16px;
+  background-color: #fafafa; 
+  font-weight: 500;
+} 

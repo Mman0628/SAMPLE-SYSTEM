@@ -1,7 +1,5 @@
 <template>
-  <div class="mt-4">
-    <!-- <div class="bgImage">  
-    </div>  -->
+  <div class="mt-4">  
   </div>
 </template>
 

@@ -40,11 +40,11 @@
           <!-- nested child item-->
           <v-list v-if="openGroups.includes(route.name)" dense>
             <v-list-item 
-            v-for="(child, childIndex) in route.children" :key="childIndex" 
-            link 
-            :to="child.path" 
-            class="nested-item"
-            > 
+              v-for="(child, childIndex) in route.children" :key="childIndex" 
+              link 
+              :to="child.path" 
+              class="nested-item"
+              > 
               <v-row align="center" no-gutters> 
                 <v-col class="d-flex" cols="auto">
                   <v-list-item-title class="nested-title">
@@ -115,17 +115,17 @@ export default {
           children:[
             {name:"Company Files", path:'/company_files', icon:'mdi-briefcase-search'},
             {name:"Project Files", path:'/project_files', icon:'mdi-card-search'},
-            {name:"Customer Files", path:'/customer_files', icon:'mdi-account-search'},
-            {name:"Security Files", path:'/security_files', icon:'mdi-shield-search'},
+            // {name:"Customer Files", path:'/customer_files', icon:'mdi-account-search'},
+            // {name:"Security Files", path:'/security_files', icon:'mdi-shield-search'},
           ]
         },
-        {name:'TCT Manager', path:'/tct_manager', icon:'tct.png',
-          children:[
-            {name:"Client Master File", path:'/client_master_file', icon:''},
-            {name:"Developer Master File", path:'', icon:''},
-            {name:"Project Master File", path:'', icon:''}, 
-          ]
-        },
+        // {name:'TCT Manager', path:'/tct_manager', icon:'tct.png',
+        //   children:[
+        //     {name:"Client Master File", path:'/client_master_file', icon:''},
+        //     {name:"Developer Master File", path:'', icon:''},
+        //     {name:"Project Master File", path:'', icon:''}, 
+        //   ]
+        // },
       ]
     }
   },

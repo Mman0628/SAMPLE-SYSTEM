@@ -4,28 +4,33 @@
             <v-col cols="4"> 
                 <v-card 
                 max-width="400px" 
+                class="mx-auto"
                 >
                     <v-toolbar color="primary" density="comfortable">
                         <v-toolbar-title style=" font-size: 12px;">PROJECT MASTER FILE</v-toolbar-title>
                         <!-- dialog  --> 
                         <v-card-actions> 
-                            <v-spacer/>
-                            <company-dialog
-                            :diaglogTitle = "title='PROJECT MASTER TABLE'"
-                            /> 
+                            <v-spacer/>  
+                            <project-dialog
+                                @updateProject = updateProject
+                                :fromProj = "proj='proj'"
+                                :tableTitle = "title = 'PROJECT TABLE MASTER FILE'"
+                            />
                         </v-card-actions> 
                     </v-toolbar>
   
                     <v-card-text> 
                         <v-row dense > 
-                            <v-col cols="3">
-                                <v-text-field v-model="projectObj.projectCode" label="Project" density="compact" variant="outlined" readonly class="small-input"/>  
+                            <v-col cols="3" style="max-height: 60px;">
+                                <v-text-field v-model="projectObj.proj_id" label="Project ID" density="compact" variant="outlined" readonly class="small-input"/>  
                             </v-col> 
-                            <v-col cols="6">
+                            <v-col cols="9" style="max-height: 60px;">
                                 <v-select   
-                                v-model="select" 
-                                :items="items"  
-                                @update:model-value="selectedpProject"
+                                v-model="selectedProject" 
+                                :items="projectItems"  
+                                :item-title="proj => proj.proj_name"
+                                return-object
+                                @update:model-value="selectedpProjectFunc"
                                 label="Select Project"   
                                 :menu-props="{ scrim: true, scrollStrategy: 'close' }"
                                 variant="outlined"
@@ -34,41 +39,113 @@
                                 clearable  
                                 class="small-select"
                                 ></v-select>
-                                <span v-show="select!=null" style="color: red; font-size: xx-small;">{{alias}}</span> 
+                                <span v-show="!!selectedProject" style="color: red; font-size: xx-small;">{{projectObj.proj_alias}}</span> 
                             </v-col>
-                            <v-col cols="3">
-                                <v-text-field v-model="projectObj.status" label="Status" density="compact" variant="outlined" readonly class="small-input"/>
-                            </v-col>
-
-                            
-                            <v-col cols="3" style="height: 50px;">
-                                <v-text-field v-model="projectObj.companyCode" label="Company" density="compact" variant="outlined" readonly class="small-input"/>
+                            <v-col cols="3" style="max-height: 50px;">
+                                <v-text-field v-model="projectObj.status_id" label="Status" density="compact" variant="outlined" readonly class="small-input"/>
                             </v-col> 
-                            <v-col cols="6" class="mt-2">
-                                <span style="font-size: x-small; color: blue;">OOA SOLUTIONS INC.</span>
+                            <v-col cols="3" style="max-height: 50px;">
+                                <v-text-field v-model="projectObj.co_id" label="Company" density="compact" variant="outlined" readonly class="small-input"/>
+                            </v-col> 
+                            <v-col cols="6" class="mt-2" style="max-height: 50px;" >
+                                <span v-show="!!selectedProject" style="font-size: x-small; color: blue;">{{projectObj.co_name}}</span>
                             </v-col> 
                         </v-row> 
                         <v-row dense>
-                            <v-col cols="6">
-                                <v-text-field v-model="projectObj.street" label="Street/Building" density="compact" variant="outlined" hide-details class="small-input"/>  
-                                <v-text-field v-model="projectObj.subdivision" label="Subdivision/District" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>  
-                                <v-text-field v-model="projectObj.zipCode" label="Zip Code" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>    
-                                <v-text-field v-model="projectObj.province" label="Province" density="compact" variant="outlined" hide-details class="mt-2 small-input"/> 
-                                    <span v-show="projectObj.province!=''"  style="font-size: x-small; color: blue;">{{provinceName}}</span> 
-                                <v-text-field v-model="projectObj.city" label="Municipality/City" density="compact" variant="outlined"  hide-details class="mt-2 small-input"/>
-                                    <span v-show="projectObj.city!=''"  style="font-size: x-small; color: blue;">{{cityName}}</span>  
+                            <v-col cols="12">
+                                <v-text-field v-model="projectObj.bldg_street" readonly label="Street/Building" density="compact" variant="outlined" hide-details class="small-input"/> 
+                            </v-col>
+                            <v-col cols="6"> 
+                                <v-text-field v-model="projectObj.district_municipality" readonly label="Subdivision/District" density="compact" variant="outlined" hide-details class="small-input"/>  
+                                <v-text-field v-model="projectObj.zipcode" readonly label="Zip Code" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>    
+                                <v-text-field v-model="projectObj.prov_id" readonly label="Province" density="compact" variant="outlined" hide-details class="mt-2 small-input"/> 
+                                    <span v-show="!!projectObj.prov_name"  style="font-size: x-small; color: blue;">{{projectObj.prov_name}}</span> 
+                                <v-text-field v-model="projectObj.city_id" readonly label="Municipality/City" density="compact" variant="outlined"  hide-details class="mt-2 small-input"/>
+                                    <span v-show="!!projectObj.CityDesc"  style="font-size: x-small; color: blue;">{{projectObj.CityDesc}}</span>  
                             </v-col>
                             <v-col cols="6">
-                                <v-text-field v-model="projectObj.landArea" label="Total Land Area" density="compact" variant="outlined" hide-details class="small-input"/> 
-                                <v-text-field v-model="projectObj.saleableArea" label="Total Saleable Area" density="compact"  variant="outlined"  hide-details class="mt-2 small-input"/>  
-                                <v-text-field v-model="projectObj.startDate" label="Start Date" density="compact"  variant="outlined"  hide-details class="mt-2 small-input"/>  
+                                <v-text-field v-model="projectObj.totLandArea" readonly label="Total Land Area" density="compact" variant="outlined" hide-details class="small-input"/> 
+                                <v-text-field v-model="projectObj.totSaleableArea" readonly label="Total Saleable Area" density="compact"  variant="outlined"  hide-details class="mt-2 small-input"/>  
+                                <v-text-field v-model="projectObj.startdate" readonly label="Start Date" density="compact"  variant="outlined"  hide-details class="mt-2 small-input"/>  
                             </v-col> 
                         </v-row>  
                     </v-card-text> 
                 </v-card>
             </v-col> 
 
-            <v-col cols="8"> 
+            <!-- SUB PROJECT -->
+            <v-col cols="4"> 
+                <v-card 
+                max-width="400px" 
+                class="mx-auto"
+                >
+                    <v-toolbar color="primary" density="comfortable">
+                        <v-toolbar-title style=" font-size: 12px;">SUB PROJECT MASTER FILE</v-toolbar-title>
+                        <!-- dialog  --> 
+                        <v-card-actions> 
+                            <v-spacer/>  
+                            <project-dialog
+                                :tableTitle = "title = 'SUB PROJECT TABLE MASTER FILE'"
+                                @updateSubProject = updateSubProject
+                            />
+                        </v-card-actions> 
+                    </v-toolbar>
+  
+                    <v-card-text> 
+                        <v-row dense > 
+                            <v-col cols="3" style="max-height: 50px;">
+                                <v-text-field v-model="subProjectObj.proj_id" label="Project ID" density="compact" variant="outlined" readonly class="small-input"/>  
+                            </v-col> 
+                            <v-col cols="9" class="mt-2" style="max-height: 50px;">
+                                <span style="font-size: x-small; color: blue;">{{subProjectObj.proj_name}}</span>
+                            </v-col>
+
+                            <v-col cols="3" style="max-height: 50px;">
+                                <v-text-field v-model="subProjectObj.sub_proj_id" label="Sub ID" density="compact" variant="outlined" readonly class="small-input"/>  
+                            </v-col> 
+                            <v-col cols="9" style="max-height: 60px;">
+                                <v-select   
+                                v-model="selectedSubProject" 
+                                :items="subProjectItems"  
+                                :item-title="item => item.sub_proj_name"
+                                return-object
+                                @update:model-value="selectedpSubProjectFunc"
+                                label="Select Sub Project"   
+                                :menu-props="{ scrim: true, scrollStrategy: 'close' }"
+                                variant="outlined"
+                                density="compact" 
+                                hide-details      
+                                clearable  
+                                class="small-select"
+                                ></v-select>
+                                
+                                <span style="color: red; font-size: xx-small;">{{subProjectObj.sub_proj_alias}}</span> 
+                            </v-col>
+
+                            <v-col cols="3" style="max-height: 50px;">
+                                <v-text-field v-model="subProjectObj.status_id" label="Status" density="compact" variant="outlined" readonly class="small-input"/>
+                            </v-col> 
+                            <v-col cols="9" class="pa-0" style="max-height: 50px;"> 
+                                <v-checkbox
+                                    v-model="subProjectObj.with_change_model"  
+                                    label="With change in house model"
+                                    class="small-checkbox"   
+                                    readonly
+                                ></v-checkbox> 
+                            </v-col> 
+
+                            <v-col cols="6">
+                                <v-text-field v-model="subProjectObj.phase" readonly label="Phase" density="compact" variant="outlined" hide-details class="small-input"/> 
+                            </v-col>
+                            <v-col cols="6"> 
+                                <v-text-field v-model="subProjectObj.release_batch" readonly label="Batch" density="compact" variant="outlined" hide-details class="small-input"/>  
+                            </v-col> 
+                        </v-row>   
+                    </v-card-text> 
+                </v-card>
+            </v-col>
+
+            <!-- <v-col cols="8"> 
                 <v-card-actions>
                 <v-spacer/>
                 <v-text-field
@@ -113,158 +190,84 @@
                         </tr>
                     </tbody>
                 </v-table> 
-            </v-col>
+            </v-col> -->
         </v-row>
-    </v-container>
-    <v-dialog v-model="projectDialog" max-width="20%" persistent>
-        <v-card>
-            <v-toolbar color="primary" density="comfortable">
-                <v-toolbar-title>{{flag}}</v-toolbar-title>  
-                <v-btn icon="mdi-close-circle" color="red" @click="closeDialog"></v-btn>
-            </v-toolbar> 
-
-            <v-card-text> 
-                <v-text-field v-model="projObj.coCode" label="coCode" density="compact" variant="outlined" max-width="300px" disabled/>
-                <v-text-field v-model="projObj.companyName" label="Company Name" density="compact" variant="outlined" max-width="300px"/>
-                <v-text-field v-model="projObj.coAlias" label="coAlias" density="compact" variant="outlined" max-width="300px"/>
-                <v-text-field v-model="projObj.street" label="Street/Building" density="compact" variant="outlined" max-width="300px"/>
-            </v-card-text>
-            <v-card-actions>
-                <v-btn @click="saveProj(flag)" color="success" variant="elevated" density="compact">SAVE</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog> 
+    </v-container> 
 </template>
 
 
 <script>
+    import ProjectDialog from './dialog_components/ProjectDialog.vue';
+    import axios from 'axios';   
+    import { mapState } from 'vuex';
+
     export default {
+        components: { ProjectDialog },
+
         data() {
             return {
-                items:['ADDAS DEVELOPMENT CORPORATION', 'ADDIO PROPERTIES INC.','AMBITION LAND INC','AMICASSA PROCESS SOLUTIONS INC',
-                    'CACTUS REALTY CORPORATION', 'COGL','COMPAS','DMCI PROJECT DEVELOPERS, INC.','EARTH & STYLE CORPORATION','EARTH ASPIRE CORPORATION'
-                ],
-                search:'',
-                select:null,
-                projectObj:{
-                    projectCode:'',
-                    companyCode:'01',
-                    city:'',
-                    province:'', 
-                    street:'',
-                    subdivision:'',
-                    zipCode:'',
-                    landArea:0,
-                    saleableArea:0,
-                    status:'',
-                    startDate:''
-                },  
-                alias:'',
-                provinceName:'',
-                cityName:'',
-                sampleDataTable:[
-                    {coCode:'01', companyName:'OOA SOLUTIONS INC.', coAlias:'OOA', street:'10F VERNIDA IV BLDG., LEVISTE ST'},
-                    {coCode:'02', companyName:'EARTH & STYLE CORPORATION', coAlias:'ESC', street:'CALOOCAN'},
-                ],
-                projObj:{},
-                tempProjObj:{}, 
-                projectDialog:false,
-                flag:''
+                selectedProject:null,
+                selectedSubProject: null, 
+                projectItems:[],
+                subProjectItems:[],  
+                projectObj:{},  
+                subProjectObj: {},   
             }
         }, 
 
+        watch: {
+            selectedProject(val) {
+                if(val){
+                    this.projectObj.status_id= val.status_id == 'A' || val.status_id == 'ACTIVE'? 'ACTIVE':'INACTIVE'
+                }
+            },
+
+            selectedSubProject(val){
+                if(val){
+                    this.subProjectObj.status_id= val.status_id === 'A' || val.status_id == 'ACTIVE'? 'ACTIVE':'INACTIVE'
+                }
+            }, 
+        },
+
+        created () {
+            this.getData();
+        },
+
         methods: { 
-            selectedpProject() {
-                if(this.select == 'ADDAS DEVELOPMENT CORPORATION'){
-                    this.projectObj = {...this.projectObj, projectCode:'20', status:'Active', startDate: '2/10/2016'} 
-                    this.alias = 'ADDAS'
-                } 
+            async getData(){
+                const projData = await axios.get('http://localhost:3000/myApi/project') 
+                this.projectItems = projData.data.project
+                this.subProjectItems = projData.data.subProject 
+                console.log(projData.data,'projjjj');
+                this.$store.commit('mutateProject', this.projectItems)
+                this.$store.commit('mutateSubProjects', this.subProjectItems)
+                return {
+                    proj: projData.data.project,
+                    subProj: projData.data.subProject 
+                }
+            }, 
+
+            async updateProject(){
+                const updatedData = await this.getData() 
+                this.projectItems = updatedData.proj
             },
 
-            edit(val,editFlag){ 
-                this.projObj={...val}
-                this.tempProjObj={...val}
-                this.projectDialog = true
-                this.flag= editFlag
+            async updateSubProject(){
+                const updatedData = await this.getData() 
+                this.subProjectItems = updatedData.subProj
             },
 
-            add(addFlag){
-                this.flag= addFlag
-                this.projectDialog = true
-                this.projObj={} 
+            selectedpSubProjectFunc(){
+                this.subProjectObj = !this.selectedSubProject ? {} : {...this.selectedSubProject}
             },
 
-            hasChanges() {
-                return Object.keys(this.projObj).some((key) => {
-                    if (this.projObj[key] !== this.tempProjObj[key]) {
-                    return true;
-                    }
-                    return false;
-                });
-            },
-
-            saveProj(EA){  
-                const idx = this.sampleDataTable.findIndex(id => id.coCode == this.projObj.coCode); 
-                if(EA == 'EDIT'){ 
-                    if(this.hasChanges()){
-                        this.sampleDataTable[idx] ={...this.projObj}
-
-                        this.$Swal.fire({ 
-                        icon: "success",
-                        text:'Successfully Edited',
-                        title: "EDITED",
-                        showConfirmButton: false,
-                        timer: 1500
-                        });
-
-                        this.projectDialog = false 
-                    }else 
-                        this.$Swal.fire({ 
-                        icon: "info",
-                        title: "No Changes Made",  
-                        });  
-                }else{      
-                    const {companyName,coAlias,street} = this.projObj 
-                    const projectKeys = [companyName,coAlias,street]
-                    const checkVal = Object.values(projectKeys).some(a => a === undefined)
-                    
-                    if(!checkVal){
-                        this.projObj.coCode = `0${this.sampleDataTable.length+1}`
-                        this.sampleDataTable.push(this.projObj)
-
-                        this.$Swal.fire({ 
-                        icon: "success",
-                        text:'Successfully Added',
-                        title: "SAVED!",
-                        showConfirmButton: false,
-                        timer: 1500
-                        });
-                        this.projectDialog = false 
-                    }else 
-                        this.$Swal.fire({ 
-                        icon: "warning",
-                        title: "Please fill all fields",  
-                        }); 
-                } 
-            },
-
-            closeDialog(){
-                this.projectDialog = false
-            } 
+            selectedpProjectFunc() { 
+                this.projectObj = !this.selectedProject ? {} : {...this.selectedProject} 
+            }, 
         },
 
         computed: {
-            filteredItems() {
-                const searchTerm = this.search.trim().toLowerCase();
- 
-                if (!searchTerm) return this.sampleDataTable;
- 
-                return this.sampleDataTable.filter(item =>
-                    Object.values(item).some(value =>
-                    String(value).toLowerCase().includes(searchTerm)
-                    )
-                );
-            },
+            ...mapState(['projects']), 
         },
     }
 </script>
@@ -278,7 +281,11 @@
 
 ::v-deep(.small-input .v-label) {
   font-size: 11px;
-}
+} 
+::v-deep(.small-checkbox .v-label) {
+  font-size: 11px;
+  max-height: 28px !important;
+} 
 
 /*select*/
 ::v-deep(.small-select .v-field__input) {
