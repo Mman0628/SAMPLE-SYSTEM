@@ -1,4 +1,5 @@
 import { createStore } from 'vuex'
+import axios from 'axios'
 
 export default createStore({
   state: {
@@ -7,6 +8,7 @@ export default createStore({
     city:[],
     projects: [],
     subProjects: [],
+    signatoriesData: [],
   },
   getters: {
 
@@ -31,9 +33,18 @@ export default createStore({
     mutateSubProjects(state,payload){
       state.subProjects = payload
     },
+
+    mutateSignatoriesData(state,payload){
+      state.signatoriesData = payload
+    },
   },
   actions: {
+    async updateProvince ({commit}){
+      const comp = await axios.get('http://localhost:3000/myApi/company')   
+      commit('mutateProvince', comp.data.province)
 
+      return comp.data.province
+    }
   },
   modules: {
   }

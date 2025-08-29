@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-        <v-row dense >  
+        <v-row dense>  
             <v-col cols="3">
                 <v-card 
                 max-width="400px"   
@@ -234,23 +234,26 @@
                             </template>
 
                             <v-list density="compact"> 
-                                <v-list-item v-for="(item,i) in menus" :key="i">
-                                    <v-btn @click="otherFiles(item.title)" density="compact" variant="outlined">
-                                        {{ item.title }}
+                                <v-list-item v-for="(title,i) in menus" :key="i">
+                                    <v-btn @click="otherFilesTitle(title)" density="compact" variant="outlined">
+                                        {{ title }}
                                     </v-btn>
                                 </v-list-item> 
                             </v-list>
                         </v-menu> 
                         <v-toolbar-title style="text-transform: uppercase; font-size: 12px;">{{ toolbarTitle }}</v-toolbar-title> 
 
-                        <!-- <v-card-actions> 
-                            <v-btn icon="mdi-plus" variant="tonal" density="compact" color="success"></v-btn>
-                            <v-btn icon="mdi-eye" variant="tonal" density="compact" color="#B0BEC5"></v-btn>
-                        </v-card-actions> -->
+                        <v-card-actions v-show="toolbarTitle !== 'OTHER COMPANY FILES'"> 
+                            <other-files-dialog
+                                :toolbarTitle = "title = toolbarTitle"
+                                @updateEntityFromOFDialog = updateFromEntity
+                            /> 
+                        </v-card-actions>
                     </v-toolbar>
                     <!-- other vue file -->
                     <other-files
-                        :toolbarTitle = "title=toolbarTitle"
+                        :toolbarTitle = "title = toolbarTitle"
+                        :updateEntity = "message"
                     /> 
                 </v-card>
             </v-col>
@@ -262,29 +265,29 @@
 //components
 import companyDialog from '../dialog_components/CompanyDialog.vue'
 import otherFiles from '../companyFiles/OtherFiles.vue'
+import otherFilesDialog from '../dialog_components/OtherFilesDialog.vue'
 import axios from 'axios'
-import { mapState } from 'vuex' 
+import { mapState } from 'vuex'  
 
 export default {
     name:'CompanyFiles',
-    components:{ companyDialog, otherFiles	,
-	},  
+    components:{ companyDialog, otherFiles, otherFilesDialog},   
 
     computed: { 
         ...mapState(['company']),
 
         menus(){ 
             return [
-                { title:'Document Signatories', value:'DS'}, 
-                { title:'Documents', value:''}, 
-                { title:'Division', value:''}, 
-                { title:'Department', value:''}, 
-                { title:'Section', value:''}, 
-                { title:'Employee Information', value:''}, 
-                { title:'Rank/Level', value:''}, 
-                { title:'Employee Status', value:''}, 
-                { title:'Holidays', value:''}, 
-                { title:'Cut-Off', value:''},  
+                'Document Signatories', 
+                'Documents', 
+                'Division', 
+                'Department', 
+                'Section', 
+                'Employee Information', 
+                'Rank/Level', 
+                'Employee Status', 
+                'Holidays', 
+                'Cut-Off',  
             ]
         },
     },
@@ -305,6 +308,7 @@ export default {
             officeBranchObj:{},
             province:[],
             city:[], 
+            message:''
             // emailRules: [
             //     v => !!v || 'Email is required',
             // ],
@@ -336,16 +340,13 @@ export default {
     },
 
     methods: {  
-        otherFiles(title){
-            if(title=='Document Signatories'){
-                this.toolbarTitle = title
-            }else if (title=='Documents'){
-                this.toolbarTitle = 'Documents'
-            }else{
-                this.toolbarTitle = ''
-            }
-            
-        }  ,
+        otherFilesTitle(title){
+            this.toolbarTitle = title
+        },
+
+        updateFromEntity(){
+            this.message = 'updateEntityData'
+        },
 
         async updateCompany(){ 
             const updatedComp = await this.getCompany();

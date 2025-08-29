@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import TestOnly from '../components/TestOnly.vue'  
 import CompanyFIles from '../components/companyFiles/CompanyFiles.vue'
 import projectFiles from '../components/ProjectFiles.vue'
+import customerFiles from '../components/customerFiles/CustomerFiles.vue'
 
 const routes = [
   {
@@ -19,6 +20,11 @@ const routes = [
     path: '/project_files',
     name: 'project_files',
     component: projectFiles
+  },
+  {
+    path: '/customer_files',
+    name: 'customer_files',
+    component: customerFiles
   },
   {
     path: '/test',

@@ -1,35 +1,39 @@
 <template>
     <div> 
-        <v-card-text v-show="toolbarTitle == 'Document Signatories'"> 
+        <v-card-text v-if="toolbarTitle == 'Document Signatories'"> 
             <v-row dense>
                 <v-col cols="12">
-                    <v-select
+                    <v-autocomplete
                         v-model="selectedEntity" 
-                        :items="officeBranchItems"  
-                        :item-title="item => item.branch_name"
+                        :items="itemsEntity"  
+                        :item-title="item => item.entity_name"
                         return-object
-                        @update:model-value="selectedOfficeBranch"
+                        @update:model-value="selectedEntityFunc"
                         label="Select Entity"   
                         :menu-props="{ scrim: true, scrollStrategy: 'close' }"
                         variant="outlined"
                         density="compact"      
                         clearable  
                         class="small-select" 
-                    ></v-select>
+                        hide-details
+                    />
+                    <!-- <span v-show="!!selectedEntity"  style="font-size: x-small; color: blue;">{{ entityObj.entity_name }}</span>  -->
                 </v-col>
 
                 <v-col cols="6">
-                    <v-text-field label="Status" density="compact" variant="outlined" hide-details class="small-input"/>  
-                    <v-text-field label="First Name" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
-                    <v-text-field label="Middle Name" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
-                    <v-text-field label="Last Name" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
-                    <v-text-field label="Position" density="compact" variant="outlined" hide-details class="mt-2 small-input"/> 
+                    <v-text-field v-model="entityObj.status_id" readonly label="Status" density="compact" variant="outlined" hide-details class="small-input"/>  
+                    <v-text-field v-model="entityObj.first_name" readonly label="First Name" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
+                    <v-text-field v-model="entityObj.middle_name" readonly label="Middle Name" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
+                    <v-text-field v-model="entityObj.last_name" readonly label="Last Name" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
+                    <v-text-field v-model="entityObj.position_as_signatory" readonly label="Position" density="compact" variant="outlined" hide-details class="mt-2 small-input"/> 
                 </v-col>
                 <v-col cols="6">
-                    <v-text-field label="TIN" density="compact" variant="outlined" hide-details class="small-input"/>
-                    <v-text-field label="CTC No" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
-                    <v-text-field label="Date Issued" type="datetime-local" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
-                    <v-autocomplete
+                    <v-text-field v-model="entityObj.tin" readonly label="TIN" density="compact" variant="outlined" hide-details class="small-input"/>
+                    <v-text-field v-model="entityObj.ctcno" readonly label="CTC No" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
+                    <v-text-field v-model="entityObj.date_tin_encoded" readonly label="Date Issued" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
+                    <v-text-field v-model="entityObj.CityDesc" readonly label="Place Issued" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
+                    <v-text-field v-model="entityObj.signatory_type_code" readonly label="Type" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
+                    <!-- <v-autocomplete
                         v-model="selectedEntity" 
                         :items="itemsEntity"  
                         :item-title="item => item.entity_name"
@@ -55,66 +59,75 @@
                         density="compact"      
                         clearable  
                         class="mt-2 small-select"
-                    />
+                    /> -->
                 </v-col>  
             </v-row> 
         </v-card-text>
 
-        <v-card-text v-show="toolbarTitle == 'Documents'">
-            <h5>{{ toolbarTitle }}</h5>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
-            <h6>MMANSKY</h6>
+        <v-card-text v-else-if="toolbarTitle !== 'OTHER COMPANY FILES'">
+            <div class="text-center"> 
+                <h2>...to follow</h2> 
+            </div> 
         </v-card-text>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
-
  
-    export default {
-        props:['toolbarTitle'],
+export default {
+    props:['toolbarTitle', 'updateEntity'],
 
-        data() {
-            return {
-                selectedEntity: null,
-                selectedType: null,
-                itemsEntity:[]
+    data() {
+        return {
+            selectedEntity: null,
+            selectedType: null, 
+            itemsEntity:[],
+            entityObj:{},
+        }
+    },
+
+    watch: {
+        updateEntity(val) {
+            if(val){
+                this.getData();
             }
+        }
+    },
+
+    created () {
+        this.getData();
+    },
+
+    methods: {
+        async getData(){
+            const arr =  await axios.get('http://localhost:3000/myApi/other_files') 
+            this.itemsEntity = arr.data
+            this.$store.commit('mutateSignatoriesData', this.itemsEntity)
         },
 
-        created () {
-            this.getData();
+        selectedTypeFunc() {
+            console.log(this.selectedType,'selectedType'); 
         },
 
-        methods: {
-            async getData(){
-               const arr =  await axios.get('http://localhost:3000/myApi/other_files')
-               console.log(arr.data,'ittooooooo dataaaa'); 
-               this.itemsEntity = arr.data
-            },
-
-            selectedTypeFunc() {
-                console.log(this.selectedType,'selectedType'); 
-            }
-        },
-    }
+        selectedEntityFunc(){
+            if (this.selectedEntity !== null){
+                const mappedEntity = Object.fromEntries(
+                    Object.entries(this.selectedEntity).map(([key, val]) =>{
+                        if(key === "status_id"){ 
+                            return [key, val = !val  ? null : val === 'A' ? 'ACTIVE':'INACTIVE']
+                        }
+                        if(key === 'signatory_type_code'){
+                            return [key, val = !val  ? null : val === 'P' ? 'PAGIBIG SIGNATORY' : 'COMPANY SIGNATORY']
+                        }
+                        return [key, val]
+                    })
+                )
+                this.entityObj = mappedEntity
+            }else this.entityObj = {}
+        }
+    },
+}
 </script>
 
 <style scoped>

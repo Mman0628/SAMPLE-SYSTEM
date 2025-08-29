@@ -20,7 +20,7 @@
     <v-card> 
       <v-toolbar color="#00BCD4" density="comfortable">
         <v-toolbar-title style="text-align: center;">{{diaglogTitle}}</v-toolbar-title>  
-        <v-btn @click="localDialog = false" icon="mdi-close-circle" color="red" v-tooltip="{location:'right',text:'Close'}"></v-btn>
+        <v-btn @click="localDialog = false, isLoading = true" icon="mdi-close-circle" color="red" v-tooltip="{location:'right',text:'Close'}"></v-btn>
       </v-toolbar>  
 
       <v-card-text>   
@@ -47,7 +47,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(comp,i) in filteredItems" :key="i">
+            <tr v-show="company.length === 0"><td :colspan="headers.length" class="text-center" style="color: #B0BEC5;">No Data Available</td></tr>
+            <tr v-if="isLoading">
+              <td :colspan = headers.length>
+                <div class="d-flex justify-center align-center" style="height: 150px;">
+                  <v-progress-circular indeterminate color="primary" size="40" class="mr-2"/>
+                  Loading data...
+                </div>
+              </td>
+            </tr> 
+            <tr v-else v-for="(comp,i) in filteredItems" :key="i">
               <td>{{ comp.co_id }}</td>
               <td>{{ comp.co_name }}</td>
               <td>{{ comp.co_alias }}</td>
@@ -176,10 +185,15 @@
     <v-card> 
       <v-toolbar color="#00BCD4" density="comfortable">
         <v-toolbar-title style="text-align: center;">{{diaglogTitle}}</v-toolbar-title>  
-        <v-btn icon="mdi-close-circle" color="red" @click="openBusinessunitDialog = false" v-tooltip="{location:'right',text:'Close'}"></v-btn>
+        <v-btn 
+          icon="mdi-close-circle" 
+          color="red" 
+          @click="openBusinessunitDialog = false, isLoading = true" 
+          v-tooltip="{location:'right',text:'Close'}"
+        ></v-btn>
       </v-toolbar>  
 
-      <v-card-text>  
+      <v-card-text>   
         <v-card-actions class="pa-0">  
           <v-spacer/>
           <v-text-field
@@ -192,8 +206,8 @@
             hide-details
             class="small-input"
           />
-        </v-card-actions>
-        
+        </v-card-actions>   
+
         <v-table density="compact">
           <thead>
             <tr>
@@ -202,9 +216,17 @@
               </th> 
             </tr>
           </thead>
-          <tbody>
-            <tr v-show="filteredBu.length === 0"><td :colspan="BuHeaders.length" class="text-center" style="color: #B0BEC5;">No Data Available</td></tr>
-            <tr v-for="(bu,i) in filteredBu" :key="i">
+          <tbody> 
+            <tr v-show="businessUnit.length === 0"><td :colspan="BuHeaders.length" class="text-center" style="color: #B0BEC5;">No Data Available</td></tr>
+            <tr v-if="isLoading">
+              <td :colspan = BuHeaders.length>
+                <div class="d-flex justify-center align-center" style="height: 150px;">
+                  <v-progress-circular indeterminate color="primary" size="40" class="mr-2"/>
+                  Loading data...
+                </div>
+              </td>
+            </tr> 
+            <tr v-else v-for="(bu,i) in filteredBu" :key="i">
               <td>{{ bu.co_id }}</td>
               <td>{{ bu.busunit_id }}</td>
               <td>{{ bu.busunit_name }}</td>
@@ -236,7 +258,7 @@
                   </template>
                 </v-tooltip>  -->
               </td>
-            </tr>
+            </tr> 
           </tbody>
         </v-table>
       </v-card-text>  
@@ -340,7 +362,12 @@
     <v-card> 
       <v-toolbar color="#00BCD4" density="comfortable">
         <v-toolbar-title style="text-align: center;">{{diaglogTitle}}</v-toolbar-title>  
-        <v-btn icon="mdi-close-circle" color="red" @click="openOfficeBranchDialog = false" v-tooltip="{location:'right',text:'Close'}"></v-btn>
+        <v-btn 
+          icon="mdi-close-circle" 
+          color="red" 
+          @click="openOfficeBranchDialog = false, isLoading = true" 
+          v-tooltip="{location:'right',text:'Close'}"
+        ></v-btn>
       </v-toolbar>  
 
       <v-card-text>  
@@ -367,8 +394,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-show="filteredOfficeBranch.length === 0"><td :colspan="BuHeaders.length" class="text-center" style="color: #B0BEC5;">No Data Available</td></tr>
-            <tr v-for="(ob,i) in filteredOfficeBranch" :key="i">
+            <tr v-show="officeBranch.length === 0"><td :colspan="BuHeaders.length" class="text-center" style="color: #B0BEC5;">No Data Available</td></tr>
+            <tr v-if="isLoading">
+              <td :colspan = BuHeaders.length>
+                <div class="d-flex justify-center align-center" style="height: 150px;">
+                  <v-progress-circular indeterminate color="primary" size="40" class="mr-2"/>
+                  Loading data...
+                </div>
+              </td>
+            </tr>  
+            <tr v-else v-for="(ob,i) in filteredOfficeBranch" :key="i">
               <td>{{ ob.co_id }}</td>
               <td>{{ ob.branch_id }}</td>
               <td>{{ ob.branch_name }}</td>
@@ -542,12 +577,11 @@ export default {
       data.map(ob => ob.status_id = ob.status_id == 'A' || ob.status_id == 'ACTIVE'? 'ACTIVE':'INACTIVE')  
     },  
 
-    hasChanges(val){  
-      console.log(val,'valllll ng save'); 
+    hasChanges(val){   
       let obj = {saveCompFlag:this.fromComp , saveBuFlag:this.fromBU, saveObFlag:this.fromOB}
       let a = Object.keys(obj).filter(val => obj[val] !== undefined)
-      let b = Object.keys(val).filter(key => key === a[0]) 
-
+      let b = Object.keys(val).filter(key => key === a[0])  
+      
       if(this.flag === 'EDIT'){  
         return this.isSaved = val[b];
         // return this.isSaved = val;
@@ -686,6 +720,7 @@ export default {
       search:'',  
       isSaved:'', 
       flag:'',
+      isLoading: true,
       openOfficeBranchDialog:false,
       openBusinessunitDialog:false,
       addBuDialog:false,
@@ -718,14 +753,23 @@ export default {
       
       
       if(param.bu !== undefined){ 
-        this.businessUnitTable = this.businessUnit
-        this.openBusinessunitDialog = true
+        this.openBusinessunitDialog = true 
+        this.businessUnitTable = this.businessUnit  
+        setTimeout(() => {
+          this.isLoading = false
+        }, 1500);
       }else if(param.co !== undefined){  
         this.companyTable = this.company
         this.localDialog = true
+        setTimeout(() => {
+          this.isLoading = false
+        }, 1500); 
       }else if(param.ob !== undefined){
         this.officeBranchTable = this.officeBranch
         this.openOfficeBranchDialog = true
+        setTimeout(() => {
+          this.isLoading = false
+        }, 1500);
       }
     }, 
 
@@ -755,8 +799,7 @@ export default {
 
     add(addFlag,menu){  
       this.flag = addFlag 
-      if(menu.bu !== undefined){
-        console.log('bu addd'); 
+      if(menu.bu !== undefined){ 
         this.buObj = {}
         this.addBuDialog = true 
       } else if(menu.co !== undefined){
@@ -770,12 +813,7 @@ export default {
       }
     }, 
 
-    async saveComp(flag,menu){ 
-      console.log(flag,'flaggggg');
-      console.log(menu,'menuuuuu');
-      console.log(this.buObj,'pasa');
-      
-      
+    async saveComp(flag,menu){  
       if(flag == 'EDIT'){ 
         if(menu === 'co'){ 
           console.log(this.companyObj, 'payload sa this.companyObj');

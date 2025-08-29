@@ -205,7 +205,12 @@
         <v-card> 
             <v-toolbar color="#00BCD4" density="comfortable">
                 <v-toolbar-title style="text-align: center;">{{tableTitle}}</v-toolbar-title>  
-                <v-btn icon="mdi-close-circle" color="red" @click="openProjectTableDialog = false" v-tooltip="{location:'right',text:'Close'}"></v-btn>
+                <v-btn 
+                    icon="mdi-close-circle" 
+                    color="red" 
+                    @click="openProjectTableDialog = false, isLoading = true" 
+                    v-tooltip="{location:'right',text:'Close'}"
+                ></v-btn>
             </v-toolbar>  
 
             <v-card-text>  
@@ -232,8 +237,16 @@
                         </tr>
                     </thead>
                     <tbody> 
-                        <tr v-show="filteredItems.length === 0"><td :colspan="projectHeaders.length" class="text-center" style="color: #B0BEC5;">No Data Available</td></tr>
-                        <tr v-for="(bu,i) in filteredItems" :key="i">
+                        <tr v-show="projects.length === 0"><td :colspan="projectHeaders.length" class="text-center" style="color: #B0BEC5;">No Data Available</td></tr>
+                        <tr v-if="isLoading">
+                            <td :colspan = projectHeaders.length>
+                                <div class="d-flex justify-center align-center" style="height: 150px;">
+                                <v-progress-circular indeterminate color="primary" size="40" class="mr-2"/>
+                                Loading data...
+                                </div>
+                            </td>
+                        </tr> 
+                        <tr v-else v-for="(bu,i) in filteredItems" :key="i">
                             <td>{{ bu.co_id }}</td>
                             <td>{{ bu.proj_id }}</td>
                             <td>{{ bu.proj_name }}</td>
@@ -277,7 +290,12 @@
         <v-card> 
             <v-toolbar color="#00BCD4" density="comfortable">
                 <v-toolbar-title style="text-align: center;">{{tableTitle}}</v-toolbar-title>  
-                <v-btn icon="mdi-close-circle" color="red" @click="openSubProjectTableDialog = false" v-tooltip="{location:'right',text:'Close'}"></v-btn>
+                <v-btn 
+                    icon="mdi-close-circle" 
+                    color="red" 
+                    @click="openSubProjectTableDialog = false, isLoading = true" 
+                    v-tooltip="{location:'right',text:'Close'}"
+                ></v-btn>
             </v-toolbar>  
 
             <v-card-text>  
@@ -304,12 +322,20 @@
                         </tr>
                     </thead>
                     <tbody> 
-                        <tr v-show="filteredSubProject.length === 0">
+                        <tr v-show="subProjects.length === 0">
                             <td :colspan="subProjectHeaders.length" class="text-center" style="color: #B0BEC5;">
                                 No Data Available
                             </td>
                         </tr>
-                        <tr v-for="(sproj,i) in filteredSubProject" :key="i"> 
+                        <tr v-if="isLoading">
+                            <td :colspan = subProjectHeaders.length>
+                                <div class="d-flex justify-center align-center" style="height: 150px;">
+                                <v-progress-circular indeterminate color="primary" size="40" class="mr-2"/>
+                                Loading data...
+                                </div>
+                            </td>
+                        </tr> 
+                        <tr v-else v-for="(sproj,i) in filteredSubProject" :key="i"> 
                             <td>{{ sproj.proj_id }}</td>
                             <td>{{ sproj.sub_proj_id }}</td>
                             <td>{{ sproj.sub_proj_name }}</td>
@@ -356,6 +382,7 @@
                 projectDialog: false,
                 subProjectDialog: false,
                 isSaved: false,
+                isLoading: true,
                 openProjectTableDialog: false,
                 openSubProjectTableDialog: false,
                 flag:'', 
@@ -467,12 +494,16 @@
             openTable(menu){
                 if(menu){
                     this.openProjectTableDialog = true
-                    this.projectDataTable = this.projects 
-                    console.log(this.projects,'testttt');
-                    
+                    this.projectDataTable = this.projects  
+                    setTimeout(() => {
+                        this.isLoading = false
+                    }, 1500); 
                 }else{
                     this.openSubProjectTableDialog = true
                     this.subProjectDataTable = this.subProjects
+                    setTimeout(() => {
+                        this.isLoading = false
+                    }, 1500);
                 }  
             },
 
