@@ -266,8 +266,7 @@
   </v-dialog>
   <!-- BUSINESS UNIT ADD DIALOG -->
   <v-dialog v-model="addBuDialog" max-width="400px" persistent>
-    <v-card>
-      <h1>POTA NICE</h1>
+    <v-card> 
       <v-toolbar color="#424242" density="comfortable"> 
         <v-toolbar-title>{{flag}} BUSINESS UNIT</v-toolbar-title>  
         <v-btn icon="mdi-close-circle" color="red" @click="addBuDialog = false" v-tooltip="{location:'right',text:'Close'}"></v-btn>
@@ -441,8 +440,7 @@
   </v-dialog>
   <!-- OFFICE BRANCH ADD DIALOG -->
   <v-dialog v-model="addOfficeBranchDialog" max-width="400px" persistent>
-    <v-card>
-      <h1>ofice branch na</h1>
+    <v-card> 
       <v-toolbar color="#424242" density="comfortable"> 
         <v-toolbar-title>{{flag}} OFFICE BRANCH</v-toolbar-title>  
         <v-btn icon="mdi-close-circle" color="red" @click="addOfficeBranchDialog = false" v-tooltip="{location:'right',text:'Close'}"></v-btn>
@@ -823,7 +821,7 @@ export default {
             confirmButtonText: "Yes", 
           }).then(async (result) => { 
             if (result.isConfirmed) { 
-              const res = await axios.post('http://localhost:3000/myApi/edit_company', {data: this.companyObj, flag:this.fromComp})
+              const res = await axios.post('http://192.168.1.174:3000/myApi/edit_company', {data: this.companyObj, flag:this.fromComp})
               await this.$Swal.fire({
                 title: res.data.message,
                 text: "",
@@ -844,7 +842,7 @@ export default {
             confirmButtonText: "Yes", 
           }).then(async (result) => { 
             if (result.isConfirmed) { 
-              const res = await axios.post('http://localhost:3000/myApi/edit_company', {data: this.buObj, flag:this.fromBU})
+              const res = await axios.post('http://192.168.1.174:3000/myApi/edit_company', {data: this.buObj, flag:this.fromBU})
               await this.$Swal.fire({
                 title: res.data.message,
                 text: "",
@@ -865,7 +863,7 @@ export default {
             confirmButtonText: "Yes", 
           }).then(async (result) => { 
             if (result.isConfirmed) { 
-              const res = await axios.post('http://localhost:3000/myApi/edit_company', {data: this.officeBranchObj, flag:this.fromOB})
+              const res = await axios.post('http://192.168.1.174:3000/myApi/edit_company', {data: this.officeBranchObj, flag:this.fromOB})
               await this.$Swal.fire({
                 title: res.data.message,
                 text: "",
@@ -883,7 +881,7 @@ export default {
         if(menu === 'co'){ 
           console.log(this.companyObj, 'payload sa this.companyObj');
           
-          const res = await axios.post('http://localhost:3000/myApi/add_company', {data: this.companyObj, flag: this.fromComp}) 
+          const res = await axios.post('http://192.168.1.174:3000/myApi/add_company', {data: this.companyObj, flag: this.fromComp}) 
           console.log(res.data,'response');
           
           if(res.data.success){
@@ -904,7 +902,7 @@ export default {
           }
           this.addDialog = false
         }else if(menu === 'bu'){
-          const res = await axios.post('http://localhost:3000/myApi/add_company', {data: this.buObj, flag: this.fromBU}) 
+          const res = await axios.post('http://192.168.1.174:3000/myApi/add_company', {data: this.buObj, flag: this.fromBU}) 
           console.log(this.buObj,'nowww');
           
           console.log(res.data,'response');
@@ -928,7 +926,7 @@ export default {
           this.addBuDialog = false
         }else if(menu === 'ob'){
           console.log(this.officeBranchObj,'payload ng officeBranchObj'); 
-          const res = await axios.post('http://localhost:3000/myApi/add_company', {data: this.officeBranchObj, flag: this.fromOB})  
+          const res = await axios.post('http://192.168.1.174:3000/myApi/add_company', {data: this.officeBranchObj, flag: this.fromOB})  
 
           if(res.data.success){
             this.$Swal.fire({ 

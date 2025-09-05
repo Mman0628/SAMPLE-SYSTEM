@@ -4,12 +4,18 @@ import TestOnly from '../components/TestOnly.vue'
 import CompanyFIles from '../components/companyFiles/CompanyFiles.vue'
 import projectFiles from '../components/ProjectFiles.vue'
 import customerFiles from '../components/customerFiles/CustomerFiles.vue'
+import masterFile from '../components/TCT/MasterFiles.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/master_file',
+    name: 'master_file',
+    component: masterFile
   },
   {
     path: '/company_files',

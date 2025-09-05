@@ -235,7 +235,7 @@
 
         methods: { 
             async getData(){
-                const projData = await axios.get('http://localhost:3000/myApi/project') 
+                const projData = await axios.get('http://192.168.1.174:3000/myApi/project') 
                 this.projectItems = projData.data.project
                 this.subProjectItems = projData.data.subProject 
                 console.log(projData.data,'projjjj');
@@ -257,8 +257,15 @@
                 this.subProjectItems = updatedData.subProj
             },
 
-            selectedpSubProjectFunc(){
-                this.subProjectObj = !this.selectedSubProject ? {} : {...this.selectedSubProject}
+            selectedpSubProjectFunc(){ 
+                this.subProjectObj = !this.selectedSubProject ? {} : Object.fromEntries(
+                                                                        Object.entries(this.selectedSubProject).map(([key, val]) =>{
+                                                                            if(key === "with_change_model"){
+                                                                                return [key, val = val === 1 ? true : false]
+                                                                            }
+                                                                            return [key,val]
+                                                                        })
+                                                                    )
             },
 
             selectedpProjectFunc() { 

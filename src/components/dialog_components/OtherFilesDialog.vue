@@ -207,7 +207,7 @@
                     confirmButtonText: "Yes", 
                 }).then(async (result) => { 
                     if (result.isConfirmed) { 
-                        const res = await axios.post('http://localhost:3000/myApi/insert_entity', {data: this.entityObj})   
+                        const res = await axios.post('http://192.168.1.174:3000/myApi/insert_entity', {data: this.entityObj})   
                         if(res.data.success){
                             await this.$Swal.fire({
                                 title: res.data.message,

@@ -39,11 +39,14 @@ export default createStore({
     },
   },
   actions: {
-    async updateProvince ({commit}){
-      const comp = await axios.get('http://localhost:3000/myApi/company')   
-      commit('mutateProvince', comp.data.province)
+    async updateProvince (){
+      const comp = await axios.get('http://192.168.1.174:3000/myApi/company')   
+      // commit('mutateProvince', comp.data.province)
 
-      return comp.data.province
+      return {
+        province: comp.data.province,
+        city: comp.data.city 
+      }
     }
   },
   modules: {

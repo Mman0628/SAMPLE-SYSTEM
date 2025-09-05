@@ -1,59 +1,73 @@
 <template> 
-  <v-app style="background-color:ivory;" > 
-    <v-app-bar app flat class="gradient-bar" >
+  <v-app style="background-color:ivory;" >   
+    <v-app-bar app flat class="gradient-bar">
       <!-- <v-btn icon @click="drawer = !drawer">
         <v-icon>mdi-menu</v-icon>
-      </v-btn> -->  
-        <div style="width: 250px;" class="d-flex align-center">
+      </v-btn>   -->  
+        <div style="width: 250px;" class="d-flex align-center"> 
           <v-img
             src="@/assets/OOA_Logo.png"
             height="50"  
             max-width="80"
-          />
+          /> 
           <v-toolbar-title>OOA Solutions Inc.</v-toolbar-title> 
-        </div> 
-        <!-- <v-btn @click="test">CLICK ME</v-btn>
-        <p>{{count}}</p> -->
+        </div>  
+        <!-- <v-container max-width="50%" class="d-flex justify-start">
+          <v-img
+            src="@/assets/xmas.gif"   
+            height="200"
+            width="auto"
+            style="object-fit: cover;" 
+          />
+        </v-container>  -->
     </v-app-bar>
 
     <v-navigation-drawer    
     app  
-    width="360"
+    width="320"
     expand-on-hover
     rail
     color="#CFD8DC"
     dark
     elevation="3"
     >
-      <v-container class="d-flex-row" >
-        <v-container max-height="90" class="d-flex align-center"> 
-          <v-avatar class="mr-2">
-            <v-img src="../src/assets/profile.png" ></v-img>
-          </v-avatar>
-          <span style="font-size: 12px;">User Information</span>  
-        </v-container>
+      <v-container fluid> 
+        <v-list>
+          <v-list-item
+            :prepend-avatar = "userPhoto"
+            title = "User Information"
+          ></v-list-item>
+        </v-list>
         <v-divider></v-divider> 
         
-        <v-list v-for="(route, index) in routes" :key="index" density="compact" nav>      
-          <v-list-item link :to="route.path" @click="toggleFiles(route)" :prepend-avatar="getIcon(route.icon)" :title="route.name"></v-list-item>  
+        <v-list 
+          v-for="(route, index) in routes" 
+          :key="index" 
+          density="compact"
+          nav  
+        >      
+          <v-list-item 
+            link 
+            @click="toggleFiles(route)" 
+            :to= "route.path"  
+            :prepend-avatar= "require(`@/assets/${route.icon}`)" 
+            :title= "route.name"    
+          ></v-list-item>   
 
           <!-- nested child item-->
-          <v-list v-if="openGroups.includes(route.name)" dense>
+          <v-list 
+            v-if="openGroups.includes(route.name)" 
+            density="compact" 
+            nav 
+            class="ml-4"
+          > 
             <v-list-item 
               v-for="(child, childIndex) in route.children" :key="childIndex" 
               link 
-              :to="child.path" 
-              class="nested-item"
-            > 
-              <v-row align="center" no-gutters> 
-                <v-col class="d-flex" cols="auto">
-                  <v-list-item-title class="nested-title">
-                    <v-icon class="mr-2" small>{{child.icon}}</v-icon>
-                    {{ child.name }}
-                  </v-list-item-title>
-                </v-col>
-              </v-row>
-            </v-list-item>
+              :to= "child.path"  
+              :prepend-icon= "child.icon"
+              :title= "child.name" 
+            ></v-list-item>
           </v-list> 
         </v-list> 
       </v-container> 
@@ -67,13 +81,16 @@
 
 <script>   
 import { mapState } from 'vuex'
-import axios from 'axios' 
+import axios from 'axios'  
+import image from '@/assets/profile.png'
+
 export default {
-  name: 'App', 
+  name: 'App',  
 
   data: () => ({ 
     drawer: false, 
-    openGroups:[]
+    openGroups:[],  
+    userPhoto: image, 
   }), 
 
   methods: {
@@ -89,9 +106,9 @@ export default {
       } catch (error) {
           console.error('Error fetching data:', error);
       }  
-    },
+    }, 
 
-    toggleFiles(route){  
+    toggleFiles(route){   
       const index = this.openGroups.indexOf(route.name); 
       
       if (index > -1) { 
@@ -99,11 +116,7 @@ export default {
       }else { 
         this.openGroups.push(route.name);
       }
-    }, 
-
-    getIcon(icon){
-      return require(`@/assets/${icon}`)
-    }
+    },  
   },
 
   computed:{
@@ -119,13 +132,13 @@ export default {
             // {name:"Security Files", path:'/security_files', icon:'mdi-shield-search'},
           ]
         },
-        // {name:'TCT Manager', path:'/tct_manager', icon:'tct.png',
-        //   children:[
-        //     {name:"Client Master File", path:'/client_master_file', icon:''},
-        //     {name:"Developer Master File", path:'', icon:''},
-        //     {name:"Project Master File", path:'', icon:''}, 
-        //   ]
-        // },
+        {name:'TCT Manager', path:'/tct_manager', icon:'tct.png',
+          children:[
+            {name:"Master Files", path:'/master_file', icon:'mdi-folder-cog'},
+            // {name:"Developer Master File", path:'', icon:'mdi-card-search'},
+            // {name:"Project Master File", path:'', icon:'mdi-card-search'}, 
+          ]
+        },
       ]
     }
   },
@@ -136,20 +149,5 @@ export default {
 .gradient-bar {
   background: linear-gradient(to right, #053847 50%, rgba(0, 0, 0, 0) 100%); 
   color: white;
-}
-.nested-item {  
-  margin-left: 5%;/* Indentation */
-  font-size: 100; /* Smaller font size */
-}
-
-/* Optional: Make the nested item title even smaller */
-.nested-title {
-  font-size: 0.875rem; /* Smaller font size for title */
-}
-
-/* Optional: Adjust the nested item icon size */
-.nested-item img {
-  width: 16px;
-  height: 16px;
-}
+}   
 </style>

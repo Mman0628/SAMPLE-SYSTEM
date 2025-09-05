@@ -101,7 +101,7 @@ export default {
 
     methods: {
         async getData(){
-            const arr =  await axios.get('http://localhost:3000/myApi/other_files') 
+            const arr =  await axios.get('http://192.168.1.174:3000/myApi/other_files') 
             this.itemsEntity = arr.data
             this.$store.commit('mutateSignatoriesData', this.itemsEntity)
         },

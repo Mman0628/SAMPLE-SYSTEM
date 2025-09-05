@@ -515,7 +515,7 @@
                         confirmButtonText: "Yes", 
                     }).then(async (result) => { 
                         if (result.isConfirmed) { 
-                            const res = await axios.post('http://localhost:3000/myApi/insert_project', {data: this.projectObj, flag: this.fromProj})
+                            const res = await axios.post('http://192.168.1.174:3000/myApi/insert_project', {data: this.projectObj, flag: this.fromProj})
                             if(res.data.success){
                                 await this.$Swal.fire({
                                     title: res.data.message,
@@ -543,7 +543,7 @@
                         confirmButtonText: "Yes", 
                     }).then(async (result) => {  
                         if (result.isConfirmed) {  
-                            const res = await axios.post('http://localhost:3000/myApi/insert_project', {data: this.subProjectObj})
+                            const res = await axios.post('http://192.168.1.174:3000/myApi/insert_project', {data: this.subProjectObj})
                             if(res.data.success){
                                 await this.$Swal.fire({
                                     title: res.data.message,

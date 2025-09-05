@@ -13,6 +13,7 @@
                             <customer-files-dialog
                                 @updateProvince = updateNewProvince
                                 :fromProvince = "title = 'provinceFlag'"
+                                :toolbarTitle = "title = 'Province Master File'" 
                             />
                         </v-card-actions> 
                     </v-toolbar>
@@ -22,7 +23,7 @@
                             <v-col cols="6">
                                 <v-autocomplete
                                     v-model="selectedProvince" 
-                                    :items="province"  
+                                    :items="provinceData"  
                                     :item-title="item => item.prov_name"
                                     return-object 
                                     label="Select province"   
@@ -36,7 +37,7 @@
                                 /> 
                             </v-col>
                             <v-col cols="6">
-                                <v-text-field v-model="provStatus" readonly density="compact" variant="outlined" label="Status" class="small-input" hide-details/>
+                                <v-text-field v-model="provObj.status_id" readonly density="compact" variant="outlined" label="Status" class="small-input" hide-details/>
                             </v-col> 
                         </v-row> 
                     </v-card-text> 
@@ -53,6 +54,8 @@
                             <v-spacer/>
                             <customer-files-dialog 
                             :fromCity = "title = 'cityFlag'"
+                            @updateCity = updateNewCity
+                            :toolbarTitle = "title = 'City Master File'" 
                             />   
                         </v-card-actions> 
                     </v-toolbar>
@@ -62,7 +65,7 @@
                             <v-col cols="6">
                                 <v-autocomplete
                                     v-model="selectedCity" 
-                                    :items="city"  
+                                    :items="cityData"  
                                     :item-title="item => item.CityDesc"
                                     return-object 
                                     label="Select city"   
@@ -94,6 +97,9 @@
                             <v-spacer/>   
                             <customer-files-dialog 
                             :fromCitizen = "title = 'citizenFlag'"
+                            @updateCitizen = updateNewCitizen
+                            :dataFromCustomerFiles = citizenData
+                            :toolbarTitle = "title = 'Citizen Master File'" 
                             />
                         </v-card-actions> 
                     </v-toolbar>
@@ -131,9 +137,15 @@
                     <v-toolbar color="primary" density="compact">
                         <v-toolbar-title style=" font-size: 12px;">SALUTATION MASTER FILE</v-toolbar-title>
                         <!-- dialog  --> 
-                        <!-- <v-card-actions> 
+                        <v-card-actions> 
                             <v-spacer/>   
-                        </v-card-actions>  -->
+                            <customer-files-dialog 
+                            :fromSalutation = "title = 'salutationFlag'" 
+                            @updateSalutation = updateNewSalutation
+                            :dataFromCustomerFiles = salutationData
+                            :toolbarTitle = "title = 'Salutation Master File'" 
+                            />
+                        </v-card-actions> 
                     </v-toolbar>
   
                     <v-card-text> 
@@ -171,9 +183,15 @@
                     <v-toolbar color="primary" density="compact">
                         <v-toolbar-title style=" font-size: 12px;">NATURE OF BUSINESS MASTER FILE</v-toolbar-title>
                         <!-- dialog  --> 
-                        <!-- <v-card-actions> 
+                        <v-card-actions> 
                             <v-spacer/>   
-                        </v-card-actions>  -->
+                            <customer-files-dialog 
+                            :fromNOB = "title = 'NOBFlag'"  
+                            @updateNOB = updateNewNOB
+                            :dataFromCustomerFiles = natureOfBusinessData
+                            :toolbarTitle = "title = 'Nature of Business Master File'" 
+                            />
+                        </v-card-actions> 
                     </v-toolbar>
   
                     <v-card-text> 
@@ -191,6 +209,7 @@
                                     clearable  
                                     class="small-select" 
                                     hide-details
+                                    @update:model-value="selectedNOB"
                                 /> 
                             </v-col>
                             <v-col cols="6">
@@ -200,7 +219,7 @@
                     </v-card-text> 
                 </v-card>
             </v-col>
-        </v-row>
+        </v-row> 
     </v-container> 
 </template>
 
@@ -208,10 +227,10 @@
     //components
     import customerFilesDialog from '../dialog_components/CustomerFilesDialog.vue'
     import { mapState } from 'vuex';
-    import axios from 'axios';
+    import axios from 'axios';  
 
     export default {
-        components: { customerFilesDialog },
+        components: { customerFilesDialog},
 
         data() {
             return {
@@ -219,50 +238,73 @@
                 citizenObj: {},
                 salutationObj: {},
                 NOB_Obj: {},
+                provObj: {},
                 selectedProvince: null,
                 selectedCity: null,
                 selectedCitizen: null,
                 selectedSalutation: null,
                 selectedNatureOfBusiness: null,
-                cityProv: '',
-                provStatus: '',
+                cityProv: '', 
                 status: '',
                 citizenData: [],
                 salutationData: [],
                 natureOfBusinessData: [],
                 provinceData: [],
+                cityData: [], 
+                btnColor: null,
             }
         },
 
         computed: {
-            ...mapState(['province', 'city'])
+            ...mapState(['province', 'city', 'company'])
         },
 
         created () {  
-            this.getCustomerFiles();
-        },
+            this.getCustomerFiles(); 
+            this.provinceData = this.province
+            this.cityData = this.city
+        },  
 
-        watch: {
+        methods: {   
+            async getCustomerFiles(){
+                const res = await axios.get('http://192.168.1.174:3000/myApi/customer_files')
+                console.log(res.data,'citizen'); 
+                this.citizenData = res.data.citizen  
+                this.salutationData = res.data.salutation 
+                this.natureOfBusinessData = res.data.natureOfBusiness 
+                return {
+                    citizen: this.citizenData,
+                    salutation: this.salutationData,
+                    NOB: this.natureOfBusinessData
+                }
+            },
+
+            async updateNewNOB(){
+                const res = await this.getCustomerFiles()
+                this.natureOfBusinessData = res.NOB
+            },
+
+            async updateNewSalutation (){
+                const res = await this.getCustomerFiles()
+                this.salutationData = res.salutation
+            },
+
+            async updateNewCitizen(){
+                const res = await this.getCustomerFiles()
+                this.citizenData = res.citizen
+            },
+
             updateNewProvince(newVal) {
+                console.log(newVal,'newVal ng prov pota'); 
                 if(newVal){
                     this.provinceData = newVal
                 }
             },
 
-            province(prov){
-                if(prov){
-                    this.provinceData = prov
+            updateNewCity(newVal) {
+                if(newVal){
+                    this.cityData = newVal
                 }
-            } 
-        },
-
-        methods: {
-            async getCustomerFiles(){
-                const res = await axios.get('http://localhost:3000/myApi/customer_files')
-                console.log(res.data,'citizen'); 
-                this.citizenData = res.data.citizen  
-                this.salutationData = res.data.salutation 
-                this.natureOfBusinessData = res.data.natureOfBusiness 
             },
 
             selectedCityFunc() {  
@@ -279,33 +321,37 @@
                 }
             },
 
-            selectedProvinceFunc(){
-                this.provStatus = !this.selectedProvince? '' : 'ACTIVE'
+            selectedProvinceFunc(){  
+                this.provObj = this.mappedData(this.selectedProvince)
             },  
 
-            mappedData(selectedObj, objData){ 
+            mappedData(selectedObj){ 
+                let obj = {}
                 if(selectedObj !== null){
-                    let mapItem = Object.fromEntries(
+                    obj = Object.fromEntries(
                         Object.entries(selectedObj).map(([key, val]) => {
                             if(key === "status_id"){
                                 return [key, val = !val ? null : val == 'A' ? 'ACTIVE' : 'INACTIVE']
                             }
                             return [key, val]
                         })
-                    )
-                    objData = {...mapItem} 
+                    ) 
                 }else {
-                    objData = {}
+                    obj = {}
                 } 
-                return objData; 
+                return obj; 
+            },
+
+            selectedNOB(){
+                this.NOB_Obj = this.mappedData(this.selectedNatureOfBusiness);
             },
 
             selectedCitizenFunc(){  
-                this.citizenObj = this.mappedData(this.selectedCitizen, this.citizenObj);
+                this.citizenObj = this.mappedData(this.selectedCitizen);
             },
 
             selectedSalutationFunc(){ 
-                this.salutationObj = this.mappedData(this.selectedSalutation, this.salutationObj); 
+                this.salutationObj = this.mappedData(this.selectedSalutation); 
             }
         },
     }

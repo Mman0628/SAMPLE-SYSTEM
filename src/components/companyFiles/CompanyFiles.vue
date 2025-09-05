@@ -20,9 +20,7 @@
                     <v-card-text> 
                         <v-row dense>
                             <v-col cols="3" style="max-height: 50px;">
-                                <v-text-field v-model="compObj.co_id" label="Co Code" density="compact" variant="outlined" readonly 
-                                class="small-input"
-                                />  
+                                <v-text-field v-model="compObj.co_id" label="Co Code" density="compact" variant="outlined" readonly class="small-input"/>  
                             </v-col> 
                             <v-col cols="6" style="max-height: 50px;">
                                 <v-select   
@@ -365,13 +363,13 @@ export default {
 
         async getCompany(){
             try {
-                const comp = await axios.get('http://localhost:3000/myApi/company')   
+                const comp = await axios.get('http://192.168.1.174:3000/myApi/company')   
                 this.companyItems = comp.data.company  
                 this.province =  comp.data.province
                 this.city = comp.data.city 
                 this.businessunitItems = comp.data.businessunit
                 this.officeBranchItems = comp.data.officeBranch
-                console.log(comp.data);
+                // console.log(comp.data);
                 
                 this.$store.commit('mutateCompany', this.companyItems) 
                 this.$store.commit('mutateProvince', this.province)
