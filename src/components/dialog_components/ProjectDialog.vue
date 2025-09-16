@@ -1,6 +1,6 @@
 <template> 
     <v-btn 
-        @click="add({proj:fromProj})" 
+        @click="add()" 
         color="success"  
         density="compact" 
         variant="tonal" 
@@ -8,7 +8,7 @@
         v-tooltip="{location:'bottom',text:'New'}"
     ></v-btn> 
     <v-btn 
-        @click="openTable(fromProj)" 
+        @click="openTable()" 
         color="#B0BEC5"  
         density="compact" 
         variant="tonal" 
@@ -53,11 +53,11 @@
                     </v-col> 
 
                     <v-col cols="9" style="max-height: 50px;">
-                        <v-select   
+                        <v-autocomplete   
                             v-model="projectObj.co_id" 
                             :items="company"   
                             :item-title="co => co.co_name"
-                            return-object 
+                            :item-value="co => co.co_id" 
                             label="Select company"   
                             :menu-props="{ scrim: true, scrollStrategy: 'close' }"
                             variant="outlined"
@@ -65,7 +65,7 @@
                             hide-details      
                             clearable  
                             class="small-select"
-                        ></v-select> 
+                        />  
                     </v-col>   
 
                     <v-col cols="12" style="max-height: 50px;">
@@ -75,11 +75,11 @@
                     <v-col cols="6"> 
                         <v-text-field v-model="projectObj.district_municipality" label="Subdivision/District" density="compact" variant="outlined" hide-details class="small-input"/>  
                         <v-text-field v-model="projectObj.zipcode" label="Zip Code" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>  
-                        <v-select   
-                            v-model="projectObj.prov_name" 
+                        <v-autocomplete   
+                            v-model="projectObj.prov_id" 
                             :items="province"  
                             :item-title="item => item.prov_name" 
-                            return-object  
+                            :item-value="item => item.prov_id" 
                             label="Select Province"   
                             :menu-props="{ scrim: true, scrollStrategy: 'close' }"
                             variant="outlined"
@@ -87,12 +87,12 @@
                             hide-details      
                             clearable  
                             class="mt-2 small-select"
-                        ></v-select>
-                        <v-select   
-                            v-model="projectObj.CityDesc" 
+                        />
+                        <v-autocomplete   
+                            v-model="projectObj.CityCode" 
                             :items="city"  
                             :item-title="item => item.CityDesc" 
-                            return-object  
+                            :item-value="item => item.CityCode" 
                             label="Select Municipality/City"   
                             :menu-props="{ scrim: true, scrollStrategy: 'close' }"
                             variant="outlined"
@@ -100,7 +100,7 @@
                             hide-details      
                             clearable  
                             class="mt-2 small-select"
-                        ></v-select> 
+                        /> 
                     </v-col>
                     <v-col cols="6">
                         <v-text-field v-model="projectObj.totLandArea" label="Total Land Area" density="compact" variant="outlined" hide-details class="small-input"/> 
@@ -111,7 +111,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn 
-                    @click="saveProj(flag)" 
+                    @click="saveProj()" 
                     :disabled="hasChanges" 
                     color="success" 
                     variant="elevated" 
@@ -137,11 +137,11 @@
             <v-card-text> 
                 <v-row dense >  
                     <v-col cols="9" style="max-height: 50px;">
-                        <v-select   
-                            v-model="subProjectObj.proj_name" 
+                        <v-autocomplete   
+                            v-model="subProjectObj.proj_id" 
                             :items="projects"  
                             :item-title="item => item.proj_name"
-                            return-object 
+                            :item-value="item => item.proj_id" 
                             label="Select Project"   
                             :menu-props="{ scrim: true, scrollStrategy: 'close' }"
                             variant="outlined"
@@ -149,7 +149,7 @@
                             hide-details      
                             clearable  
                             class="small-select"
-                        ></v-select>  
+                        />   
                     </v-col> 
                     <v-col cols="6" style="max-height: 50px;">
                         <v-select   
@@ -190,7 +190,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn 
-                    @click="saveProj(flag)" 
+                    @click="saveProj()" 
                     :disabled="hasChanges" 
                     color="success" 
                     variant="elevated" 
@@ -246,37 +246,30 @@
                                 </div>
                             </td>
                         </tr> 
-                        <tr v-else v-for="(bu,i) in filteredItems" :key="i">
-                            <td>{{ bu.co_id }}</td>
-                            <td>{{ bu.proj_id }}</td>
-                            <td>{{ bu.proj_name }}</td>
-                            <td>{{ bu.proj_alias }}</td>
-                            <td>{{ bu.bldg_street }}</td>
-                            <td>{{ bu.district_municipality }}</td>
-                            <td>{{ bu.city_id }}</td>
-                            <td>{{ bu.prov_id }}</td>
-                            <td>{{ bu.zipcode }}</td>
-                            <td>{{ bu.startdate }}</td>
-                            <td>{{ bu.totLandArea }}</td>
-                            <td>{{ bu.totSaleableArea }}</td> 
-                            <td>{{ bu.vatable }}</td>
-                            <td>{{ bu.status_id }}</td>
+                        <tr v-else v-for="(proj,i) in filteredItems" :key="i">
+                            <td>{{ proj.co_id }}</td>
+                            <td>{{ proj.proj_id }}</td>
+                            <td>{{ proj.proj_name }}</td>
+                            <td>{{ proj.proj_alias }}</td>
+                            <td>{{ proj.bldg_street }}</td>
+                            <td>{{ proj.district_municipality }}</td>
+                            <td>{{ proj.city_id }}</td>
+                            <td>{{ proj.prov_id }}</td>
+                            <td>{{ proj.zipcode }}</td>
+                            <td>{{ proj.startdate }}</td>
+                            <td>{{ proj.totLandArea }}</td>
+                            <td>{{ proj.totSaleableArea }}</td> 
+                            <td>{{ proj.vatable }}</td>
+                            <td>{{ proj.status_id }}</td>
                             <td class="text-center" width="100px"> 
                                 <v-btn 
-                                    @click="edit(bu,'EDIT','bu')"  
-                                    color="#CFD8DC" 
+                                    @click="edit(proj)"  
+                                    color="success" 
                                     density="compact" 
                                     icon="mdi-pencil" 
-                                    class="mr-2" 
-                                    disabled
-                                    v-tooltip="{location:'top',text:'EDIT'}"
-                                ></v-btn>  
-                            
-                                <v-tooltip text="DELETE" location="bottom">
-                                <template v-slot:activator="{ props }">
-                                    <v-btn @click="deleteItem" v-bind="props" color="error" density="compact" icon="mdi-delete"></v-btn> 
-                                </template>
-                                </v-tooltip> 
+                                    class="mr-2"  
+                                    v-tooltip="'EDIT'"
+                                ></v-btn>   
                             </td>
                         </tr>
                     </tbody>
@@ -346,32 +339,26 @@
                             <td>{{ sproj.status_id }}</td>
                             <td class="text-center" width="100px"> 
                                 <v-btn 
-                                    @click="edit(sproj,'EDIT','bu')"  
-                                    color="#CFD8DC" 
+                                    @click="edit(sproj)"  
+                                    color="success" 
                                     density="compact" 
                                     icon="mdi-pencil" 
-                                    class="mr-2" 
-                                    disabled
-                                    v-tooltip="{location:'top',text:'EDIT'}"
-                                ></v-btn>  
-                            
-                                <!-- <v-tooltip text="DELETE" location="bottom">
-                                <template v-slot:activator="{ props }">
-                                    <v-btn @click="deleteItem" v-bind="props" color="error" density="compact" icon="mdi-delete"></v-btn> 
-                                </template>
-                                </v-tooltip>  -->
+                                    class="mr-2"  
+                                    v-tooltip="{text:'EDIT'}"
+                                ></v-btn>   
                             </td>
                         </tr>
                     </tbody>
                 </v-table>
             </v-card-text>  
         </v-card>
-    </v-dialog>
+    </v-dialog> 
 </template>
 
 <script>
+    import { saveData } from '@/save-data/save'; 
     import { mapState } from 'vuex';
-    import axios from 'axios';
+    // import axios from 'axios';  
 
     export default {
         emits:['updateProject', 'updateSubProject'],
@@ -380,8 +367,7 @@
         data() {
             return {
                 projectDialog: false,
-                subProjectDialog: false,
-                isSaved: false,
+                subProjectDialog: false, 
                 isLoading: true,
                 openProjectTableDialog: false,
                 openSubProjectTableDialog: false,
@@ -399,11 +385,23 @@
         computed: {
             ...mapState(['projects', 'subProjects', 'company', 'province', 'city']),
 
-            hasChanges(){
-                if(this.fromProj !== undefined){
-                    return (!this.projectObj || !this.projectObj.proj_name || !this.projectObj.proj_alias || !this.projectObj.co_id || !this.projectObj.status_id) ? true : false
-                }return (!this.subProjectObj || !this.subProjectObj.proj_name || !this.subProjectObj.status_id || !this.subProjectObj.sub_proj_name 
+            hasChanges(){ 
+                if(this.flag === 'ADD'){
+                    if(this.fromProj === 'proj'){
+                        return (!this.projectObj || !this.projectObj.proj_name || !this.projectObj.proj_alias || !this.projectObj.co_id || !this.projectObj.status_id) ? true : false
+                    }
+                    return (!this.subProjectObj || !this.subProjectObj.proj_id || !this.subProjectObj.status_id || !this.subProjectObj.sub_proj_name 
                         || !this.subProjectObj.sub_proj_alias || !this.subProjectObj.phase || !this.subProjectObj.release_batch) ? true : false
+                }else{
+                    //edit
+                    if(this.fromProj === 'proj'){
+                        return !this.projectObj || !this.projectObj.proj_name || !this.projectObj.proj_alias || !this.projectObj.co_id || !this.projectObj.status_id ? true : this.isSaved({obj: this.projectObj, temp: this.tempProjectObj})
+                    }
+                    return (!this.subProjectObj || !this.subProjectObj.proj_id || !this.subProjectObj.status_id || !this.subProjectObj.sub_proj_name 
+                        || !this.subProjectObj.sub_proj_alias || !this.subProjectObj.phase || !this.subProjectObj.release_batch) ? true : this.isSaved({obj: this.subProjectObj, temp: this.tempSubProjectObj})
+                }
+                
+                
             },
 
             projectHeaders(){
@@ -470,6 +468,7 @@
                 if(val){
                     val.map(value => value.status_id = value.status_id === 'A' || value.status_id === 'ACTIVE' ? 'ACTIVE' : 'INACTIVE' ) 
                     val.map(value => value.vatable = value.vatable === false  || value.vatable === 0 ?  0 : 1) 
+                    this.projectDataTable = val
                 } 
             },
 
@@ -477,22 +476,47 @@
                 if(val){
                     val.map(value => value.status_id = value.status_id === 'A' || value.status_id === 'ACTIVE' ? 'ACTIVE' : 'INACTIVE' ) 
                     val.map(value => value.with_change_model = value.with_change_model === false  || value.with_change_model === 0 ?  0 : 1) 
+                    this.subProjectDataTable = val
                 } 
             }, 
         },
 
         methods: {
-            add(menu) {
+            add() {
                 this.flag = 'ADD'
-                if(menu.proj !== undefined){
+                if(this.fromProj === 'proj'){
                     this.projectDialog = true 
+                    this.projectObj = {} 
                 } else{
                     this.subProjectDialog = true
+                    this.subProjectObj = {}
                 }
             },
 
-            openTable(menu){
-                if(menu){
+            edit(data){
+                this.flag = 'EDIT'
+                if(this.fromProj === 'proj'){
+                    this.projectDialog = true 
+                    this.projectObj = {...data}
+                    this.tempProjectObj = {...data}
+                }else{
+                    this.subProjectDialog = true
+                    this.subProjectObj = {...data}
+                    this.tempSubProjectObj = {...data}
+                } 
+            },
+
+            isSaved(payload){
+                return Object.keys(payload.obj).every((key) => {
+                    if (payload.obj[key] === payload.temp[key]) {
+                    return true;  
+                    }
+                    return false; 
+                });
+            },
+
+            openTable(){
+                if(this.fromProj){
                     this.openProjectTableDialog = true
                     this.projectDataTable = this.projects  
                     setTimeout(() => {
@@ -506,64 +530,59 @@
                     }, 1500);
                 }  
             },
-
-            async saveProj(){ 
-                if(this.fromProj !== undefined){ 
-                    this.$Swal.fire({
-                        title: "Do you want to add new project?",
-                        showDenyButton: true, 
-                        confirmButtonText: "Yes", 
-                    }).then(async (result) => { 
-                        if (result.isConfirmed) { 
-                            const res = await axios.post('http://192.168.1.174:3000/myApi/insert_project', {data: this.projectObj, flag: this.fromProj})
-                            if(res.data.success){
-                                await this.$Swal.fire({
-                                    title: res.data.message,
-                                    text: "",
-                                    icon: "success",
-                                    timer: 1500,  
-                                    showConfirmButton: false 
-                                });   
-                                this.projectDialog = false 
-                                this.$emit('updateProject')
-                            }else{
-                                this.$Swal.fire({ 
-                                icon: "error",
-                                text: res.data.message,
-                                title: "ERROR!", 
-                                });
-                            }   
-                        }  
-                    });
-                } else{
-                    console.log(this.subProjectObj,'subbbb'); 
-                    this.$Swal.fire({
-                        title: "Do you want to add new sub project?",
-                        showDenyButton: true, 
-                        confirmButtonText: "Yes", 
-                    }).then(async (result) => {  
-                        if (result.isConfirmed) {  
-                            const res = await axios.post('http://192.168.1.174:3000/myApi/insert_project', {data: this.subProjectObj})
-                            if(res.data.success){
-                                await this.$Swal.fire({
-                                    title: res.data.message,
-                                    text: "",
-                                    icon: "success",
-                                    timer: 1500,  
-                                    showConfirmButton: false 
-                                }); 
-                                this.subProjectDialog = false 
-                                this.$emit('updateSubProject') 
-                            }else{
-                                this.$Swal.fire({ 
-                                icon: "error",
-                                text: res.data.message,
-                                title: "ERROR!", 
-                                });
-                            }    
+            
+            async saveProj(){   
+                if(this.flag === 'ADD'){
+                    if(this.fromProj === 'proj'){
+                        const data = saveData({
+                            title: 'project',
+                            flag: this.fromProj,
+                            data: this.projectObj,
+                            status: 'ADD'
+                        })
+                        const res = await data.saveProject() 
+                        if(res === 'saved'){
+                            this.projectDialog = false 
+                            this.$emit('updateProject')
                         } 
-                    });
-                }
+                    }else{
+                        const data = saveData({
+                            title: 'sub project',
+                            flag: '',
+                            data: this.subProjectObj,
+                            status: 'ADD'
+                        })
+                        const res = await data.saveProject() 
+                        if(res === 'saved'){
+                            this.subProjectDialog = false 
+                            this.$emit('updateSubProject')
+                        } 
+                    }
+                }else{
+                    //edit 
+                    if(this.fromProj === 'proj'){
+                        const data = saveData({ 
+                            flag: this.fromProj,
+                            data: this.projectObj, 
+                        })
+                        const res = await data.saveProject() 
+
+                        if(res === 'edit saved'){
+                            this.projectDialog = false 
+                            this.$emit('updateProject')
+                        } 
+                    }else{
+                        const data = saveData({  
+                            data: this.subProjectObj, 
+                        })
+                        const res = await data.saveProject() 
+
+                        if(res === 'edit saved'){
+                            this.subProjectDialog = false 
+                            this.$emit('updateSubProject')
+                        } 
+                    }
+                } 
             },
 
             deleteItem(){

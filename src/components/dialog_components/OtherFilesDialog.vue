@@ -1,6 +1,6 @@
 <template> 
     <v-btn 
-        @click="add(toolbarTitle)" 
+        @click="add()" 
         color="success"  
         density="compact" 
         variant="tonal" 
@@ -8,7 +8,7 @@
         v-tooltip="{location:'bottom',text:'New'}"
     ></v-btn> 
     <v-btn 
-        @click="openTable(toolbarTitle)" 
+        @click="openTable()" 
         color="#B0BEC5"  
         density="compact" 
         variant="tonal" 
@@ -31,6 +31,9 @@
 
             <v-card-text>  
                 <v-row dense> 
+                    <v-col cols="12">
+                        <v-text-field v-if="flag === 'EDIT'" v-model="entityObj.entity_name" readonly label="Entity name" density="compact" variant="outlined" hide-details class="small-input"/>
+                    </v-col>
                     <v-col cols="6"> 
                         <v-text-field v-model="entityObj.first_name" label="First Name" density="compact" variant="outlined" hide-details class="small-input"/>
                         <v-text-field v-model="entityObj.middle_name" label="Middle Name" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
@@ -56,7 +59,7 @@
                             v-model="entityObj.CityCode" 
                             :items="city"  
                             :item-title="item => item.CityDesc"
-                            return-object 
+                            :item-value="item => item.CityCode" 
                             label="Select place issued"   
                             :menu-props="{ scrim: true, scrollStrategy: 'close' }"
                             variant="outlined"
@@ -68,8 +71,7 @@
                         <v-autocomplete
                             v-model="entityObj.signatory_type_code"
                             :items="['Company Signatory', 'PAG-IBIG Signatory']"   
-                            label="Select Type" 
-                            return-object
+                            label="Select Type"  
                             :menu-props="{ scrim: true, scrollStrategy: 'close' }"
                             variant="outlined"
                             density="compact"      
@@ -80,7 +82,7 @@
                 </v-row> 
             </v-card-text>
             <v-card-actions>   
-                <v-btn @click="save(flag)" :disabled="hasChanges" color="success" variant="elevated" density="compact">SAVE</v-btn>
+                <v-btn @click="save()" :disabled="hasChanges" color="success" variant="elevated" density="compact">SAVE</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -120,12 +122,19 @@
                     items-per-page="10"
                     fixed-header 
                     density="compact"  
-                > </v-data-table> 
-                    <!-- <template v-slot:[`item.actions`]="{ item }">
-                        <v-btn @click="editItem(item)">Edit</v-btn>
-                        <v-btn @click="deleteItem(item)">Delete</v-btn>
-                    </template> -->
-                
+                > 
+                    <template v-slot:[`item.actions`]="{ item }">
+                        <v-btn 
+                            @click="editItem(item)" 
+                            icon="mdi-pencil"
+                            variant="flat"
+                            density="compact"
+                            color="success"
+                            v-tooltip="'Edit'"
+                        ></v-btn>
+                        <!-- <v-btn @click="deleteItem(item)">Delete</v-btn> -->
+                    </template>
+                </v-data-table>  
             </v-card-text>  
         </v-card>
     </v-dialog>
@@ -143,11 +152,11 @@
             return {
                 openDocumentSignDialog: false,
                 openDSTableDialog: false,
-                isLoading: true,
-                isSaved: '',
+                isLoading: true, 
                 flag: '',
                 search:'',
                 entityObj: {},
+                tempEntityObj: {},
                 DocumentSignData: [],
             }
         },
@@ -156,14 +165,19 @@
             ...mapState(['city', 'signatoriesData']), 
 
             hasChanges(){
-                return (!this.entityObj.first_name || !this.entityObj.last_name || !this.entityObj.status_id) ? true : false
+                if(this.flag === 'ADD'){
+                    return (!this.entityObj || !this.entityObj.last_name || !this.entityObj.status_id) ? true : false
+                }else{
+                    return !this.entityObj || !this.entityObj.last_name || !this.entityObj.status_id ? true : this.isSaved({obj: this.entityObj, temp: this.tempEntityObj})
+                }
+                
             },
 
             DSHeaders(){
                 return [
                     { title: 'ID', align: 'start', key: 'entity_id', sortable:false},
                     { title: 'NAME', align: 'start', key: 'entity_name', sortable:false},
-                    { title: 'ACTION', align: 'start', key: 'actions', sortable:false}
+                    { title: 'ACTION', align: 'center', key: 'actions', sortable:false, width: 200} 
                 ] 
             }
         },
@@ -178,20 +192,32 @@
         },
 
         methods: {
+            isSaved(payload){
+                return Object.keys(payload.obj).every((key) => {
+                    if (payload.obj[key] === payload.temp[key]) {
+                    return true;  
+                    }
+                    return false; 
+                });
+            },
+            
             editItem(data){
-                console.log(data, 'manski');
-                alert('working')
+                this.flag = 'EDIT' 
+                this.openDocumentSignDialog = true
+                this.entityObj = {...data}
+                this.tempEntityObj = {...data} 
             },
 
-            add(title) {
+            add() {
                 this.flag = 'ADD' 
-                if(title === 'Document Signatories'){
+                if(this.toolbarTitle === 'Document Signatories'){
                     this.openDocumentSignDialog = true
+                    this.entityObj = {}
                 }    
             },
 
-            openTable(title){ 
-                if(title === 'Document Signatories'){
+            openTable(){ 
+                if(this.toolbarTitle === 'Document Signatories'){
                     this.openDSTableDialog = true
                     setTimeout(() => {
                         this.DocumentSignData = this.signatoriesData
@@ -201,32 +227,64 @@
             },
 
             async save(){
-                this.$Swal.fire({
-                    title: "Do you want to add new signatories?",
-                    showDenyButton: true, 
-                    confirmButtonText: "Yes", 
-                }).then(async (result) => { 
-                    if (result.isConfirmed) { 
-                        const res = await axios.post('http://192.168.1.174:3000/myApi/insert_entity', {data: this.entityObj})   
-                        if(res.data.success){
-                            await this.$Swal.fire({
-                                title: res.data.message,
-                                text: "",
-                                icon: "success",
-                                timer: 1500,  
-                                showConfirmButton: false 
-                            });   
-                            this.$emit('updateEntityFromOFDialog') 
-                            this.openDocumentSignDialog = false  
-                        }else{
-                            this.$Swal.fire({ 
-                            icon: "error",
-                            text: res.data.message,
-                            title: "ERROR!", 
-                            });
-                        }   
-                    }  
-                }); 
+                if (this.flag === 'ADD'){
+                    this.$Swal.fire({
+                        title: "Do you want to add new signatories?",
+                        showDenyButton: true, 
+                        confirmButtonText: "Yes", 
+                    }).then(async (result) => { 
+                        if (result.isConfirmed) { 
+                            const res = await axios.post('http://192.168.1.174:3000/myApi/insert_entity', {data: this.entityObj})   
+                            if(res.data.success){
+                                await this.$Swal.fire({
+                                    title: res.data.message,
+                                    text: "",
+                                    icon: "success",
+                                    timer: 1500,  
+                                    showConfirmButton: false 
+                                });   
+                                this.$emit('updateEntityFromOFDialog') 
+                                this.openDocumentSignDialog = false 
+                            }else{
+                                this.$Swal.fire({ 
+                                icon: "error",
+                                text: res.data.message,
+                                title: "ERROR!", 
+                                });
+                            }   
+                        }  
+                    });
+                }else{
+                    //EDIT 
+                    console.log(this.entityObj,'this.entityObj'); 
+                    this.$Swal.fire({
+                        title: "Do you want to save the changes?",
+                        showDenyButton: true, 
+                        confirmButtonText: "Yes", 
+                    }).then(async (result) => { 
+                        if (result.isConfirmed) { 
+                            const res = await axios.post('http://192.168.1.174:3000/myApi/edit_entity', {data: this.entityObj})
+                            if(res.data.success){
+                                await this.$Swal.fire({
+                                    title: res.data.message,
+                                    text: "",
+                                    icon: "success",
+                                    timer: 1500,  
+                                    showConfirmButton: false 
+                                });    
+
+                                this.$emit('updateEntityFromOFDialog') 
+                                this.openDocumentSignDialog = false 
+                            }else{
+                                this.$Swal.fire({ 
+                                icon: "error",
+                                text: res.data.message,
+                                title: "ERROR!", 
+                                });
+                            }  
+                        } 
+                    });
+                } 
             }
         },
     }

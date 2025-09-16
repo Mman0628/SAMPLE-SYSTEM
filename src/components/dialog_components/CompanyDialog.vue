@@ -1,6 +1,6 @@
 <template> 
   <v-btn 
-    @click="add('ADD',{bu:fromBU, co:fromComp, ob:fromOB})" 
+    @click="add()" 
     color="success"  
     density="compact" 
     variant="tonal" 
@@ -8,7 +8,7 @@
     v-tooltip="{location:'bottom',text:'New'}"
   ></v-btn> 
   <v-btn 
-    @click="openDialog({bu:fromBU, co:fromComp, ob:fromOB})"  
+    @click="openDialog()"  
     color="#B0BEC5" 
     density="compact" 
     variant="tonal" 
@@ -72,23 +72,22 @@
               <td>{{ comp.status_id }}</td>
               <td align="center"> 
                 <v-btn 
-                  @click="edit(comp,'EDIT','co')"  
+                  @click="edit(comp)"  
                   color="#CFD8DC" 
                   density="compact"  
                   icon="mdi-pencil"  
                   class="mr-1"
-                  v-tooltip="{location:'top',text:'EDIT'}"
-                  disabled
+                  v-tooltip="{location:'top',text:'EDIT'}" 
                 ></v-btn>     
 
-                <v-btn 
+                <!-- <v-btn 
                   @click="deleteItem"  
                   color="error" 
                   density="compact" 
                   icon="mdi-delete"
-                  v-tooltip="{location:'top',text:'DELETE'}"
+                  v-tooltip="'DELETE'"
                   disabled
-                ></v-btn>  
+                ></v-btn>   -->
               </td>
             </tr>
           </tbody>
@@ -139,11 +138,11 @@
             <v-text-field v-model="companyObj.bldg_street" label="Street/Building" density="compact" variant="outlined" hide-details class="small-input"/>  
             <v-text-field v-model="companyObj.district_municipality" label="Subdivision/District" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>  
             <v-text-field v-model="companyObj.zip_code" label="Zip Code" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>     
-            <v-select   
-              v-model="companyObj.prov_name" 
+            <v-autocomplete   
+              v-model="companyObj.prov_id" 
               :items="province"  
               :item-title="item => item.prov_name" 
-              return-object  
+              :item-value="item => item.prov_id" 
               label="Select Province"   
               :menu-props="{ scrim: true, scrollStrategy: 'close' }"
               variant="outlined"
@@ -151,12 +150,12 @@
               hide-details      
               clearable  
               class="mt-2 small-select"
-            ></v-select> 
-            <v-select   
-              v-model="companyObj.CityDesc" 
+            /> 
+            <v-autocomplete   
+              v-model="companyObj.CityCode" 
               :items="city"  
               :item-title="item => item.CityDesc" 
-              return-object  
+              :item-value="item => item.CityCode" 
               label="Select Municipality/City"   
               :menu-props="{ scrim: true, scrollStrategy: 'close' }"
               variant="outlined"
@@ -164,7 +163,7 @@
               hide-details      
               clearable  
               class="mt-2 small-select"
-            ></v-select>
+            /> 
           </v-col>
           <v-col cols="6">
             <v-text-field v-model="companyObj.tel_no" label="Phone" density="compact" variant="outlined" hide-details class="small-input"/> 
@@ -175,7 +174,7 @@
         </v-row> 
       </v-card-text>
       <v-card-actions>   
-        <v-btn @click="saveComp(flag,fromComp)" :disabled="isSaved" color="success" variant="elevated" density="compact">SAVE</v-btn>
+        <v-btn @click="saveComp()" :disabled="hasChanges" color="success" variant="elevated" density="compact">SAVE</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog> 
@@ -242,14 +241,12 @@
               <td>{{ bu.status_id }}</td>
               <td align="center"> 
                 <v-btn 
-                  @click="edit(bu,'EDIT','bu')" 
-                  v-bind="props"  
+                  @click="edit(bu)"  
                   color="#CFD8DC" 
                   density="compact" 
                   icon="mdi-pencil" 
-                  class="mr-4" 
-                  disabled
-                  v-tooltip="{location:'top',text:'EDIT'}"
+                  class="mr-4"  
+                  v-tooltip="'EDIT'"
                 ></v-btn>  
                 
                 <!-- <v-tooltip text="DELETE" location="bottom">
@@ -278,11 +275,11 @@
             <v-text-field v-model="buObj.busunit_name" label="Enter Business name" density="compact" variant="outlined" hide-details class="small-input"/>
           </v-col> 
           <v-col cols="12">
-            <v-select   
-              v-model="buObj.co_name" 
+            <v-autocomplete   
+              v-model="buObj.co_id" 
               :items="company"  
               :item-title="item => item.co_name" 
-              return-object 
+              :item-value="item => item.co_id"  
               label="Select company"   
               :menu-props="{ scrim: true, scrollStrategy: 'close' }"
               variant="outlined"
@@ -290,7 +287,7 @@
               hide-details      
               clearable  
               class="small-select"
-            ></v-select>
+            /> 
           </v-col>
           <v-col cols="6">
             <v-select   
@@ -316,11 +313,11 @@
             <v-text-field v-model="buObj.bldg_street" label="Street/Building" density="compact" variant="outlined" hide-details class="small-input"/>  
             <v-text-field v-model="buObj.district_municipality" label="Subdivision/District" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>  
             <v-text-field v-model="buObj.zip_code" label="Zip Code" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>     
-            <v-select   
-              v-model="buObj.prov_name" 
+            <v-autocomplete   
+              v-model="buObj.prov_id" 
               :items="province"  
               :item-title="item => item.prov_name" 
-              return-object  
+              :item-value="item => item.prov_id"  
               label="Select Province"   
               :menu-props="{ scrim: true, scrollStrategy: 'close' }"
               variant="outlined"
@@ -328,17 +325,17 @@
               hide-details      
               clearable  
               class="mt-2 small-select"
-            ></v-select>  
+            />  
           </v-col>
           <v-col cols="6">
             <v-text-field v-model="buObj.tel_no" label="Phone" density="compact" variant="outlined" hide-details class="small-input"/>  
             <v-text-field v-model="buObj.fax_no" label="Fax" density="compact"  variant="outlined" hide-details class="mt-2 small-input"/> 
             <v-text-field v-model="buObj.e_mail" label="Email" type="email" required density="compact"  variant="outlined"  hide-details class="mt-2 small-input"/>  
-            <v-select   
-              v-model="buObj.CityDesc" 
+            <v-autocomplete   
+              v-model="buObj.CityCode" 
               :items="city"  
               :item-title="item => item.CityDesc" 
-              return-object  
+              :item-value="item => item.CityCode"  
               label="Select Municipality/City"   
               :menu-props="{ scrim: true, scrollStrategy: 'close' }"
               variant="outlined"
@@ -346,12 +343,12 @@
               hide-details      
               clearable  
               class="mt-2 small-select"
-            ></v-select>
+            /> 
           </v-col> 
         </v-row> 
       </v-card-text>
       <v-card-actions>   
-        <v-btn @click="saveComp(flag, fromBU)" :disabled="isSaved" color="success" variant="elevated" density="compact">SAVE</v-btn>
+        <v-btn @click="saveComp()" :disabled="hasChanges" color="success" variant="elevated" density="compact">SAVE</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -417,12 +414,11 @@
               <td>{{ ob.status_id }}</td>
               <td align="center"> 
                 <v-btn 
-                  @click="edit(ob,'EDIT','ob')"  
+                  @click="edit(ob)"  
                   color="#CFD8DC" 
                   density="compact" 
                   icon="mdi-pencil" 
-                  class="mr-4" 
-                  disabled
+                  class="mr-4"  
                   v-tooltip="{location:'top',text:'EDIT'}"
                 ></v-btn>  
                 
@@ -449,11 +445,11 @@
       <v-card-text>  
         <v-row dense> 
           <v-col cols="12">
-            <v-select   
-              v-model="officeBranchObj.co_name" 
+            <v-autocomplete   
+              v-model="officeBranchObj.co_id" 
               :items="company"  
               :item-title="item => item.co_name" 
-              return-object 
+              :item-value="item => item.co_id"  
               label="Select company"   
               :menu-props="{ scrim: true, scrollStrategy: 'close' }"
               variant="outlined"
@@ -461,7 +457,7 @@
               hide-details      
               clearable  
               class="small-select"
-            ></v-select>
+            /> 
           </v-col>
           <v-col cols="12">
             <v-text-field v-model="officeBranchObj.branch_name" label="Enter Office Branch name" density="compact" variant="outlined" hide-details class="small-input"/>
@@ -490,11 +486,11 @@
             <v-text-field v-model="officeBranchObj.bldg_street" label="Street/Building" density="compact" variant="outlined" hide-details class="small-input"/>  
             <v-text-field v-model="officeBranchObj.district_municipality" label="Subdivision/District" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>  
             <v-text-field v-model="officeBranchObj.zip_code" label="Zip Code" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>     
-            <v-select   
-              v-model="officeBranchObj.prov_name" 
+            <v-autocomplete   
+              v-model="officeBranchObj.prov_id" 
               :items="province"  
               :item-title="item => item.prov_name" 
-              return-object  
+              :item-value="item => item.prov_id"  
               label="Select Province"   
               :menu-props="{ scrim: true, scrollStrategy: 'close' }"
               variant="outlined"
@@ -502,16 +498,16 @@
               hide-details      
               clearable  
               class="mt-2 small-select"
-            ></v-select>  
+            />  
           </v-col>
           <v-col cols="6">
             <v-text-field v-model="officeBranchObj.tel_no" label="Phone" density="compact" variant="outlined" hide-details class="small-input"/>  
             <v-text-field v-model="officeBranchObj.fax_no" label="Fax" density="compact"  variant="outlined" hide-details class="mt-2 small-input"/>  
-            <v-select   
-              v-model="officeBranchObj.CityDesc" 
+            <v-autocomplete   
+              v-model="officeBranchObj.CityCode" 
               :items="city"  
               :item-title="item => item.CityDesc" 
-              return-object  
+              :item-value="item => item.CityCode"  
               label="Select Municipality/City"   
               :menu-props="{ scrim: true, scrollStrategy: 'close' }"
               variant="outlined"
@@ -519,12 +515,12 @@
               hide-details      
               clearable  
               class="mt-2 small-select"
-            ></v-select>
+            /> 
           </v-col> 
         </v-row> 
       </v-card-text>
       <v-card-actions>   
-        <v-btn @click="saveComp(flag, fromOB)" :disabled="isSaved" color="success" variant="elevated" density="compact">SAVE</v-btn>
+        <v-btn @click="saveComp()" :disabled="hasChanges" color="success" variant="elevated" density="compact">SAVE</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -537,23 +533,22 @@ import { mapState } from 'vuex';
 export default { 
   name: 'DialogComponent',
   props:[    
-    'diaglogTitle','disabled',
-    'fromComp',
-    'businessUnit' ,'fromBU',
-    'officeBranch', 'fromOB'
+    'diaglogTitle','disabled', 
+    'businessUnit' ,
+    'officeBranch' , 'fromCompanyFiles'
   ],
   emits:['updateCompany', 'updateBusinessunit', 'updateOfficeBranch' ],
 
   watch: {
-    company(val){
-      if(val){
-        this.companyTable = val
+    company(newData){
+      if(newData){
+        this.companyTable = newData
       }
-    },
+    }, 
 
-    businessUnit(updateData){
-      if(updateData){
-        this.businessUnitTable = updateData
+    businessUnit(newData){
+      if(newData){
+        this.businessUnitTable = newData
       } 
     },
 
@@ -573,19 +568,7 @@ export default {
 
     filteredOfficeBranch(data) {
       data.map(ob => ob.status_id = ob.status_id == 'A' || ob.status_id == 'ACTIVE'? 'ACTIVE':'INACTIVE')  
-    },  
-
-    hasChanges(val){   
-      let obj = {saveCompFlag:this.fromComp , saveBuFlag:this.fromBU, saveObFlag:this.fromOB}
-      let a = Object.keys(obj).filter(val => obj[val] !== undefined)
-      let b = Object.keys(val).filter(key => key === a[0])  
-      
-      if(this.flag === 'EDIT'){  
-        return this.isSaved = val[b];
-        // return this.isSaved = val;
-      } 
-        return this.isSaved = val 
-    }
+    },   
   },
 
   computed: {
@@ -624,35 +607,31 @@ export default {
 
     hasChanges() {
       if(this.flag === 'EDIT'){
-        const saveCompFlag = Object.keys(this.companyObj).every((key) => {
-          if (this.companyObj[key] === this.tempCompanyObj[key]) {
-            return true;  
-          }
-            return false; 
-        }); 
-
-        const saveBuFlag = Object.keys(this.buObj).every((key) => {
-          if (this.buObj[key] === this.tempBuObj[key]) {
-            return true;  
-          }
-            return false; 
-        }); 
-
-        const saveObFlag = Object.keys(this.officeBranchObj).every((key) => {
-          if (this.officeBranchObj[key] === this.tempOfficeBranchObj[key]) {
-            return true;  
-          }
-            return false; 
-        });   
-        return {saveCompFlag,saveBuFlag, saveObFlag}; 
+        if(this.fromCompanyFiles === 'bu'){
+          return !this.buObj || !this.buObj.busunit_name || !this.buObj.co_id || !this.buObj.busunit_alias || !this.buObj.status_id ? true : this.isSaved({
+                                                                                                                                              obj: this.buObj, 
+                                                                                                                                              temp: this.tempBuObj
+                                                                                                                                            })
+        }else if(this.fromCompanyFiles === 'co'){ 
+          return !this.companyObj.co_name || !this.companyObj || !this.companyObj.status_id || !this.companyObj.co_alias ? true : this.isSaved({
+                                                                                                                                    obj: this.companyObj, 
+                                                                                                                                    temp: this.tempCompanyObj
+                                                                                                                                  }) 
+        }else if(this.fromCompanyFiles === 'ob'){
+          return !this.officeBranchObj || !this.officeBranchObj.co_id || !this.officeBranchObj.branch_name || !this.officeBranchObj.status_id ? true : this.isSaved({
+                                                                                                                                                        obj: this.officeBranchObj, 
+                                                                                                                                                        temp: this.tempOfficeBranchObj
+                                                                                                                                                      }) 
+        } 
+        return alert('mali sa edit has changes')
       }else{
-        if(this.fromComp !== undefined){ 
+        if(this.fromCompanyFiles === 'co'){ 
           return (!this.companyObj.co_name || !this.companyObj || !this.companyObj.status_id || !this.companyObj.co_alias) ? true : false
-        }else if(this.fromBU !== undefined){
-          return (!this.buObj || !this.buObj.busunit_name || !this.buObj.co_name || !this.buObj.busunit_alias) ? true : false
-        }else if(this.fromOB !== undefined){
-          return (!this.officeBranchObj || !this.officeBranchObj.co_name || !this.officeBranchObj.branch_name || !this.officeBranchObj.status_id) ? true : false
-        }return alert('mali sa add')
+        }else if(this.fromCompanyFiles === 'bu'){
+          return !this.buObj || !this.buObj.busunit_name || !this.buObj.co_id || !this.buObj.busunit_alias || !this.buObj.status_id ? true : false
+        }else if(this.fromCompanyFiles === 'ob'){
+          return (!this.officeBranchObj || !this.officeBranchObj.co_id || !this.officeBranchObj.branch_name || !this.officeBranchObj.status_id) ? true : false
+        }return alert('mali sa add hasChanges')
       }
     }, 
 
@@ -715,8 +694,7 @@ export default {
 
   data() {
     return {   
-      search:'',  
-      isSaved:'', 
+      search:'',   
       flag:'',
       isLoading: true,
       openOfficeBranchDialog:false,
@@ -744,25 +722,29 @@ export default {
   // },   
 
   methods: { 
-    openDialog(param){
-      console.log(this.businessUnit,'this.businessUnit');
-      console.log(param,'param'); 
-      console.log(this.filteredBu);
-      
-      
-      if(param.bu !== undefined){ 
+    isSaved(payload){
+      return Object.keys(payload.obj).every((key) => {
+        if (payload.obj[key] === payload.temp[key]) {
+          return true;  
+        }
+          return false; 
+      });
+    },
+
+    openDialog(){    
+      if(this.fromCompanyFiles === 'bu'){ 
         this.openBusinessunitDialog = true 
         this.businessUnitTable = this.businessUnit  
         setTimeout(() => {
           this.isLoading = false
         }, 1500);
-      }else if(param.co !== undefined){  
+      }else if(this.fromCompanyFiles === 'co'){  
         this.companyTable = this.company
         this.localDialog = true
         setTimeout(() => {
           this.isLoading = false
         }, 1500); 
-      }else if(param.ob !== undefined){
+      }else if(this.fromCompanyFiles === 'ob'){
         this.officeBranchTable = this.officeBranch
         this.openOfficeBranchDialog = true
         setTimeout(() => {
@@ -775,35 +757,32 @@ export default {
       alert('Wala pa')
     },  
 
-    edit(val,editFlag,menu){    
-      console.log(val,'valllll ng ob');
-      
-      this.flag= editFlag   
-      console.log(menu,'ittoooo');
-      if(menu == 'bu'){
+    edit(value){  
+      this.flag= 'EDIT'    
+      if(this.fromCompanyFiles === 'bu'){
         this.addBuDialog = true 
-        this.buObj = {...val}
-        this.tempBuObj = {...val}
-      }else if(menu == 'co'){
+        this.buObj = {...value}
+        this.tempBuObj = {...value}
+      }else if(this.fromCompanyFiles === 'co'){
         this.addDialog = true
-        this.companyObj={...val}
-        this.tempCompanyObj={...val} 
-      }else if(menu == 'ob'){
+        this.companyObj={...value}
+        this.tempCompanyObj={...value} 
+      }else if(this.fromCompanyFiles === 'ob'){
         this.addOfficeBranchDialog = true 
-        this.officeBranchObj = {...val}
-        this.tempOfficeBranchObj = {...val} 
+        this.officeBranchObj = {...value}
+        this.tempOfficeBranchObj = {...value} 
       }  
-    },
-
-    add(addFlag,menu){  
-      this.flag = addFlag 
-      if(menu.bu !== undefined){ 
+    }, 
+    
+    add(){  
+      this.flag = 'ADD' 
+      if(this.fromCompanyFiles === 'bu'){ 
         this.buObj = {}
         this.addBuDialog = true 
-      } else if(menu.co !== undefined){
+      } else if(this.fromCompanyFiles === 'co'){
         this.companyObj={}  
         this.addDialog = true  
-      } else if(menu.ob !== undefined){
+      } else if(this.fromCompanyFiles === 'ob'){
         this.officeBranchObj = {}
         this.addOfficeBranchDialog = true
       } else{
@@ -811,158 +790,111 @@ export default {
       }
     }, 
 
-    async saveComp(flag,menu){  
-      if(flag == 'EDIT'){ 
-        if(menu === 'co'){ 
-          console.log(this.companyObj, 'payload sa this.companyObj');
-          this.$Swal.fire({
-            title: "Do you want to save the changes?",
-            showDenyButton: true, 
-            confirmButtonText: "Yes", 
-          }).then(async (result) => { 
-            if (result.isConfirmed) { 
-              const res = await axios.post('http://192.168.1.174:3000/myApi/edit_company', {data: this.companyObj, flag:this.fromComp})
+    saveCompData(obj, title){
+      if(this.flag === 'EDIT'){
+        this.$Swal.fire({
+          title: "Do you want to save the changes?",
+          showDenyButton: true, 
+          confirmButtonText: "Yes", 
+        }).then(async (result) => { 
+          if (result.isConfirmed) { 
+            const res = await axios.post('http://192.168.1.174:3000/myApi/edit_company', {data: obj, flag: this.fromCompanyFiles})
+            if(res.data.success){
               await this.$Swal.fire({
                 title: res.data.message,
                 text: "",
                 icon: "success",
                 timer: 1500,  
                 showConfirmButton: false 
-              });   
-              this.addDialog = false 
-              this.$emit('updateCompany') 
+              });    
+
+              if(this.fromCompanyFiles === 'co'){
+                this.addDialog = false 
+                this.$emit('updateCompany') 
+              }else if(this.fromCompanyFiles === 'bu'){
+                this.addBuDialog = false 
+                this.$emit('updateBusinessunit')
+              }else if(this.fromCompanyFiles === 'ob'){
+                this.addOfficeBranchDialog = false 
+                this.$emit('updateOfficeBranch') 
+              }else{
+                alert('wala man ma update after edit')
+              } 
+            }else{
+              this.$Swal.fire({ 
+              icon: "error",
+              text: res.data.message,
+              title: "ERROR!", 
+              });
+            }  
+          } 
+        });
+      }else{
+        //ADD 
+        this.$Swal.fire({
+          title: `Do you want to add ${title}?`,
+          showDenyButton: true, 
+          confirmButtonText: "Yes", 
+        }).then(async (result) => { 
+          if (result.isConfirmed) {
+            const res = await axios.post('http://192.168.1.174:3000/myApi/add_company', {data: obj, flag: this.fromCompanyFiles}) 
+            if(res.data.success){
+              await this.$Swal.fire({ 
+                icon: "success",
+                text: res.data.message,
+                title: "SAVED!",
+                showConfirmButton: false,
+                timer: 2000
+              });  
+
+              if(this.fromCompanyFiles === 'co'){
+                this.addDialog = false 
+                this.$emit('updateCompany') 
+              }else if(this.fromCompanyFiles === 'bu'){
+                this.addBuDialog = false 
+                this.$emit('updateBusinessunit')
+              }else if(this.fromCompanyFiles === 'ob'){
+                this.addOfficeBranchDialog = false 
+                this.$emit('updateOfficeBranch') 
+              }else{
+                alert('wala man ma update after add')
+              }
+            } else{
+              this.$Swal.fire({ 
+              icon: "error",
+              text: res.data.message,
+              title: "ERROR!", 
+              }); 
             } 
-          });
-        } else if(menu === 'bu'){  
-          console.log(this.buObj,'this.buObj edt');
-          
-          this.$Swal.fire({
-            title: "Do you want to save the changes?",
-            showDenyButton: true, 
-            confirmButtonText: "Yes", 
-          }).then(async (result) => { 
-            if (result.isConfirmed) { 
-              const res = await axios.post('http://192.168.1.174:3000/myApi/edit_company', {data: this.buObj, flag:this.fromBU})
-              await this.$Swal.fire({
-                title: res.data.message,
-                text: "",
-                icon: "success",
-                timer: 1500,  
-                showConfirmButton: false 
-              });   
-              this.addBuDialog = false 
-              this.$emit('updateBusinessunit') 
-            } 
-          });
-        }else if(menu === 'ob'){
-          console.log(this.officeBranchObj,'this.officeBranchObjthis.officeBranchObjthis.officeBranchObj');
-          
-          this.$Swal.fire({
-            title: "Do you want to save the changes?",
-            showDenyButton: true, 
-            confirmButtonText: "Yes", 
-          }).then(async (result) => { 
-            if (result.isConfirmed) { 
-              const res = await axios.post('http://192.168.1.174:3000/myApi/edit_company', {data: this.officeBranchObj, flag:this.fromOB})
-              await this.$Swal.fire({
-                title: res.data.message,
-                text: "",
-                icon: "success",
-                timer: 1500,  
-                showConfirmButton: false 
-              });   
-              this.addOfficeBranchDialog = false 
-              this.$emit('updateOfficeBranch') 
-            }
-          });
-        }    
-
-      }else{  
-        if(menu === 'co'){ 
-          console.log(this.companyObj, 'payload sa this.companyObj');
-          
-          const res = await axios.post('http://192.168.1.174:3000/myApi/add_company', {data: this.companyObj, flag: this.fromComp}) 
-          console.log(res.data,'response');
-          
-          if(res.data.success){
-            this.$Swal.fire({ 
-            icon: "success",
-            text: res.data.message,
-            title: "SAVED!",
-            showConfirmButton: false,
-            timer: 2000
-            }); 
-            this.$emit('updateCompany') 
-          } else{
-            this.$Swal.fire({ 
-            icon: "error",
-            text: res.data.message,
-            title: "ERROR!", 
-            }); 
-          }
-          this.addDialog = false
-        }else if(menu === 'bu'){
-          const res = await axios.post('http://192.168.1.174:3000/myApi/add_company', {data: this.buObj, flag: this.fromBU}) 
-          console.log(this.buObj,'nowww');
-          
-          console.log(res.data,'response');
-          
-          if(res.data.success){
-            this.$Swal.fire({ 
-            icon: "success",
-            text: res.data.message,
-            title: "SAVED!",
-            showConfirmButton: false,
-            timer: 2000
-            }); 
-            this.$emit('updateBusinessunit') 
-          } else{
-            this.$Swal.fire({ 
-            icon: "error",
-            text: res.data.message,
-            title: "ERROR!", 
-            }); 
-          }
-          this.addBuDialog = false
-        }else if(menu === 'ob'){
-          console.log(this.officeBranchObj,'payload ng officeBranchObj'); 
-          const res = await axios.post('http://192.168.1.174:3000/myApi/add_company', {data: this.officeBranchObj, flag: this.fromOB})  
-
-          if(res.data.success){
-            this.$Swal.fire({ 
-            icon: "success",
-            text: res.data.message,
-            title: "SAVED!",
-            showConfirmButton: false,
-            timer: 2000
-            }); 
-            this.$emit('updateOfficeBranch') 
-          } else{
-            this.$Swal.fire({ 
-            icon: "error",
-            text: res.data.message,
-            title: "ERROR!", 
-            }); 
-          }
-          this.addOfficeBranchDialog = false
-        }else{
-          alert('None of the menu')
-        }
-           
-
-        // else if(res.data.success == 'warning'){
-        //   this.$Swal.fire({ 
-        //   icon: "warning",
-        //   text: res.data.message,
-        //   title: "warning!", 
-        //   }); 
-        // }
-      }
+          } 
+        })
+      } 
     },
 
-    delete(){
-      
-    }
+    async saveComp(){  
+      if(this.flag == 'EDIT'){ 
+        if(this.fromCompanyFiles === 'co'){    
+          this.saveCompData(this.companyObj) 
+        }else if(this.fromCompanyFiles === 'bu'){   
+          this.saveCompData(this.buObj) 
+        }else if(this.fromCompanyFiles === 'ob'){ 
+          this.saveCompData(this.officeBranchObj) 
+        }else{
+          alert('wala man masave sa edit')
+        }   
+      }else{  
+        //ADD
+        if(this.fromCompanyFiles === 'co'){ 
+          this.saveCompData(this.companyObj, 'company')
+        }else if(this.fromCompanyFiles === 'bu'){   
+          this.saveCompData(this.buObj, 'business unit')
+        }else if(this.fromCompanyFiles === 'ob'){ 
+          this.saveCompData(this.officeBranchObj, 'office branch') 
+        }else{
+          alert('wala man sa save ih')
+        } 
+      }
+    }, 
   }
 }
 </script>

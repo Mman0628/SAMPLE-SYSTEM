@@ -10,8 +10,8 @@
                         <!-- dialog  --> 
                         <v-card-actions>  
                             <company-dialog
-                            :diaglogTitle = "title='COMPANY MASTER TABLE'" 
-                            :fromComp = "co = 'co'"
+                            :diaglogTitle = "'COMPANY MASTER TABLE'" 
+                            :fromCompanyFiles = "'co'"
                             @updateCompany="updateCompany"  
                             /> 
                         </v-card-actions> 
@@ -23,7 +23,7 @@
                                 <v-text-field v-model="compObj.co_id" label="Co Code" density="compact" variant="outlined" readonly class="small-input"/>  
                             </v-col> 
                             <v-col cols="6" style="max-height: 50px;">
-                                <v-select   
+                                <v-autocomplete   
                                     v-model="select" 
                                     :items="companyItems"  
                                     :item-title="item => item.co_name" 
@@ -36,7 +36,7 @@
                                     hide-details      
                                     clearable  
                                     class="small-select"
-                                ></v-select>
+                                /> 
                                 <span v-show="select!=null" style="color: red; font-size: xx-small;">{{compObj.co_alias}}</span> 
                             </v-col>
                             <v-col cols="3"  style="max-height: 50px;">
@@ -77,9 +77,9 @@
                         <v-card-actions> 
                             <v-spacer/>
                             <company-dialog
-                                :diaglogTitle = "title='BUSINESS UNIT MASTER TABLE'"
+                                :diaglogTitle = "'BUSINESS UNIT MASTER TABLE'"
                                 :businessUnit = businessunitItems
-                                :fromBU = "bu = 'bu'"
+                                :fromCompanyFiles = "'bu'"
                                 @updateBusinessunit = updateBusinessunit
                             /> 
                         </v-card-actions> 
@@ -92,20 +92,20 @@
                                 <v-text-field v-model="businessunitObj.busunit_id" label="Business Unit ID" density="compact" variant="outlined" readonly class="small-input"/>  
                             </v-col> 
                             <v-col cols="6" >
-                                <v-select   
-                                v-model="selectBusinessunit" 
-                                :items="businessunitItems"  
-                                :item-title="item => item.busunit_name"
-                                return-object
-                                @update:model-value="selectedBusinessunit"
-                                label="Select Business Unit"   
-                                :menu-props="{ scrim: true, scrollStrategy: 'close' }"
-                                variant="outlined"
-                                density="compact" 
-                                hide-details      
-                                clearable  
-                                class="small-select"
-                                ></v-select>
+                                <v-autocomplete   
+                                    v-model="selectBusinessunit" 
+                                    :items="businessunitItems"  
+                                    :item-title="item => item.busunit_name"
+                                    return-object
+                                    @update:model-value="selectedBusinessunit"
+                                    label="Select Business Unit"   
+                                    :menu-props="{ scrim: true, scrollStrategy: 'close' }"
+                                    variant="outlined"
+                                    density="compact" 
+                                    hide-details      
+                                    clearable  
+                                    class="small-select"
+                                /> 
                                 <span v-show="businessunitObj.busunit_name!=null" style="color: red; font-size: xx-small;">{{businessunitObj.busunit_alias}}</span> 
                             </v-col>
                             <v-col cols="3" style="max-height: 50px;">
@@ -151,9 +151,9 @@
                         <v-card-actions> 
                             <v-spacer/>
                             <company-dialog 
-                                :diaglogTitle = "title='OFFICE BRANCH MASTER TABLE'"
+                                :diaglogTitle = "'OFFICE BRANCH MASTER TABLE'"
                                 :officeBranch = officeBranchItems
-                                :fromOB = "ob = 'ob'"
+                                :fromCompanyFiles = "'ob'"
                                 @updateOfficeBranch = updateOfficeBranch
                             /> 
                         </v-card-actions> 
@@ -174,7 +174,7 @@
                                     <v-text-field v-model="officeBranchObj.branch_id" label="Office Branch Id" density="compact" variant="outlined" readonly class="small-input"/>  
                                 </v-col> 
                                 <v-col cols="6" style="max-height: 50px;">
-                                    <v-select   
+                                    <v-autocomplete   
                                         v-model="selectOfficeBranch" 
                                         :items="officeBranchItems"  
                                         :item-title="item => item.branch_name"
@@ -187,7 +187,7 @@
                                         hide-details      
                                         clearable  
                                         class="small-select"
-                                    ></v-select>
+                                    /> 
                                     <span v-show="!!selectOfficeBranch" style="color: red; font-size: xx-small;">{{officeBranchObj.branch_alias}}</span> 
                                 </v-col>
                                 <v-col cols="3" style="max-height: 50px;">
@@ -223,10 +223,10 @@
                         <v-menu>
                             <template v-slot:activator="{ props }">
                                 <v-btn
-                                color="#E0E0E0"
-                                v-bind="props"
-                                v-tooltip="{text:'SELECT OTHER FILES'}" 
-                                icon="mdi-view-headline"
+                                    color="#E0E0E0"
+                                    v-bind="props"
+                                    v-tooltip="'SELECT OTHER FILES'" 
+                                    icon="mdi-view-headline"
                                 > 
                                 </v-btn>
                             </template>
@@ -243,15 +243,15 @@
 
                         <v-card-actions v-show="toolbarTitle !== 'OTHER COMPANY FILES'"> 
                             <other-files-dialog
-                                :toolbarTitle = "title = toolbarTitle"
+                                :toolbarTitle = toolbarTitle
                                 @updateEntityFromOFDialog = updateFromEntity
                             /> 
                         </v-card-actions>
                     </v-toolbar>
                     <!-- other vue file -->
                     <other-files
-                        :toolbarTitle = "title = toolbarTitle"
-                        :updateEntity = "message"
+                        :toolbarTitle = toolbarTitle
+                        :updateEntity = message
                     /> 
                 </v-card>
             </v-col>
@@ -265,11 +265,12 @@ import companyDialog from '../dialog_components/CompanyDialog.vue'
 import otherFiles from '../companyFiles/OtherFiles.vue'
 import otherFilesDialog from '../dialog_components/OtherFilesDialog.vue'
 import axios from 'axios'
-import { mapState } from 'vuex'  
+import { mapState } from 'vuex'   
 
 export default {
     name:'CompanyFiles',
-    components:{ companyDialog, otherFiles, otherFilesDialog},   
+    components:{ companyDialog, otherFiles, otherFilesDialog, 
+	},   
 
     computed: { 
         ...mapState(['company']),

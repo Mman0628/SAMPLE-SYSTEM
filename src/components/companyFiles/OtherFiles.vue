@@ -1,6 +1,6 @@
 <template>
     <div> 
-        <v-card-text v-if="toolbarTitle == 'Document Signatories'"> 
+        <v-card-text v-if="toolbarTitle === 'Document Signatories'"> 
             <v-row dense>
                 <v-col cols="12">
                     <v-autocomplete
@@ -17,7 +17,6 @@
                         class="small-select" 
                         hide-details
                     />
-                    <!-- <span v-show="!!selectedEntity"  style="font-size: x-small; color: blue;">{{ entityObj.entity_name }}</span>  -->
                 </v-col>
 
                 <v-col cols="6">
@@ -33,33 +32,6 @@
                     <v-text-field v-model="entityObj.date_tin_encoded" readonly label="Date Issued" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
                     <v-text-field v-model="entityObj.CityDesc" readonly label="Place Issued" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
                     <v-text-field v-model="entityObj.signatory_type_code" readonly label="Type" density="compact" variant="outlined" hide-details class="mt-2 small-input"/>
-                    <!-- <v-autocomplete
-                        v-model="selectedEntity" 
-                        :items="itemsEntity"  
-                        :item-title="item => item.entity_name"
-                        return-object
-                        @update:model-value="selectedOfficeBranch"
-                        label="Select place issued"   
-                        :menu-props="{ scrim: true, scrollStrategy: 'close' }"
-                        variant="outlined"
-                        density="compact"      
-                        clearable  
-                        class="mt-2 small-select"
-                        hide-details
-                    /> 
-
-                    <v-autocomplete
-                        v-model="selectedType"
-                        :items="['Company Signatory', 'PAG-IBIG Signatory']"  
-                        @update:model-value="selectedTypeFunc"
-                        label="Select Type" 
-                        return-object
-                        :menu-props="{ scrim: true, scrollStrategy: 'close' }"
-                        variant="outlined"
-                        density="compact"      
-                        clearable  
-                        class="mt-2 small-select"
-                    /> -->
                 </v-col>  
             </v-row> 
         </v-card-text>

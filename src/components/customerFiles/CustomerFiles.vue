@@ -10,10 +10,11 @@
                         <!-- dialog  --> 
                         <v-card-actions> 
                             <v-spacer/>   
-                            <customer-files-dialog
+                            <customer-files-dialog 
+                                :fromProvince = "'provinceFlag'"
+                                :toolbarTitle = "'Province Master File'" 
+                                :dataFromCustomerFiles = provinceData
                                 @updateProvince = updateNewProvince
-                                :fromProvince = "title = 'provinceFlag'"
-                                :toolbarTitle = "title = 'Province Master File'" 
                             />
                         </v-card-actions> 
                     </v-toolbar>
@@ -43,6 +44,7 @@
                     </v-card-text> 
                 </v-card>
             </v-col> 
+
             <v-col cols="3"> 
                 <v-card 
                     max-width="400px"  
@@ -53,9 +55,10 @@
                         <v-card-actions> 
                             <v-spacer/>
                             <customer-files-dialog 
-                            :fromCity = "title = 'cityFlag'"
+                            :fromCity = "'cityFlag'" 
+                            :toolbarTitle = "'City Master File'" 
+                            :dataFromCustomerFiles = cityData
                             @updateCity = updateNewCity
-                            :toolbarTitle = "title = 'City Master File'" 
                             />   
                         </v-card-actions> 
                     </v-toolbar>
@@ -86,6 +89,7 @@
                     </v-card-text> 
                 </v-card>
             </v-col> 
+
             <v-col cols="3"> 
                 <v-card 
                     max-width="400px"  
@@ -96,10 +100,10 @@
                         <v-card-actions> 
                             <v-spacer/>   
                             <customer-files-dialog 
-                            :fromCitizen = "title = 'citizenFlag'"
-                            @updateCitizen = updateNewCitizen
+                            :fromCitizen = "'citizenFlag'" 
                             :dataFromCustomerFiles = citizenData
-                            :toolbarTitle = "title = 'Citizen Master File'" 
+                            :toolbarTitle = "'Citizen Master File'" 
+                            @updateCitizen = updateNewCitizen
                             />
                         </v-card-actions> 
                     </v-toolbar>
@@ -130,6 +134,7 @@
                     </v-card-text> 
                 </v-card>
             </v-col>  
+
             <v-col cols="3"> 
                 <v-card 
                     max-width="400px"  
@@ -140,10 +145,10 @@
                         <v-card-actions> 
                             <v-spacer/>   
                             <customer-files-dialog 
-                            :fromSalutation = "title = 'salutationFlag'" 
-                            @updateSalutation = updateNewSalutation
+                            :fromSalutation = "'salutationFlag'"  
                             :dataFromCustomerFiles = salutationData
-                            :toolbarTitle = "title = 'Salutation Master File'" 
+                            :toolbarTitle = "'Salutation Master File'"
+                            @updateSalutation = updateNewSalutation 
                             />
                         </v-card-actions> 
                     </v-toolbar>
@@ -175,6 +180,7 @@
                 </v-card>
             </v-col>  
         </v-row>
+
         <v-row dense class="mt-6">
             <v-col cols="3"> 
                 <v-card 
@@ -186,10 +192,10 @@
                         <v-card-actions> 
                             <v-spacer/>   
                             <customer-files-dialog 
-                            :fromNOB = "title = 'NOBFlag'"  
-                            @updateNOB = updateNewNOB
+                            :fromNOB = "'NOBFlag'"   
                             :dataFromCustomerFiles = natureOfBusinessData
-                            :toolbarTitle = "title = 'Nature of Business Master File'" 
+                            :toolbarTitle = "'Nature of Business Master File'" 
+                            @updateNOB = updateNewNOB
                             />
                         </v-card-actions> 
                     </v-toolbar>

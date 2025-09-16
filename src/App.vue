@@ -132,13 +132,13 @@ export default {
             // {name:"Security Files", path:'/security_files', icon:'mdi-shield-search'},
           ]
         },
-        {name:'TCT Manager', path:'/tct_manager', icon:'tct.png',
-          children:[
-            {name:"Master Files", path:'/master_file', icon:'mdi-folder-cog'},
-            // {name:"Developer Master File", path:'', icon:'mdi-card-search'},
-            // {name:"Project Master File", path:'', icon:'mdi-card-search'}, 
-          ]
-        },
+        // {name:'TCT Manager', path:'/tct_manager', icon:'tct.png',
+        //   children:[
+        //     {name:"Master Files", path:'/master_file', icon:'mdi-folder-cog'},
+        //     // {name:"Developer Master File", path:'', icon:'mdi-card-search'},
+        //     // {name:"Project Master File", path:'', icon:'mdi-card-search'}, 
+        //   ]
+        // },
       ]
     }
   },

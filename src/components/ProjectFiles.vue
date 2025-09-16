@@ -11,10 +11,10 @@
                         <!-- dialog  --> 
                         <v-card-actions> 
                             <v-spacer/>  
-                            <project-dialog
+                            <project-dialog 
+                                :fromProj = "'proj'"
+                                :tableTitle = "'PROJECT TABLE MASTER FILE'"
                                 @updateProject = updateProject
-                                :fromProj = "proj='proj'"
-                                :tableTitle = "title = 'PROJECT TABLE MASTER FILE'"
                             />
                         </v-card-actions> 
                     </v-toolbar>
@@ -25,20 +25,20 @@
                                 <v-text-field v-model="projectObj.proj_id" label="Project ID" density="compact" variant="outlined" readonly class="small-input"/>  
                             </v-col> 
                             <v-col cols="9" style="max-height: 60px;">
-                                <v-select   
-                                v-model="selectedProject" 
-                                :items="projectItems"  
-                                :item-title="proj => proj.proj_name"
-                                return-object
-                                @update:model-value="selectedpProjectFunc"
-                                label="Select Project"   
-                                :menu-props="{ scrim: true, scrollStrategy: 'close' }"
-                                variant="outlined"
-                                density="compact" 
-                                hide-details      
-                                clearable  
-                                class="small-select"
-                                ></v-select>
+                                <v-autocomplete   
+                                    v-model="selectedProject" 
+                                    :items="projectItems"  
+                                    :item-title="proj => proj.proj_name"
+                                    return-object
+                                    @update:model-value="selectedpProjectFunc"
+                                    label="Select Project"   
+                                    :menu-props="{ scrim: true, scrollStrategy: 'close' }"
+                                    variant="outlined"
+                                    density="compact" 
+                                    hide-details      
+                                    clearable  
+                                    class="small-select"
+                                /> 
                                 <span v-show="!!selectedProject" style="color: red; font-size: xx-small;">{{projectObj.proj_alias}}</span> 
                             </v-col>
                             <v-col cols="3" style="max-height: 50px;">
@@ -85,7 +85,7 @@
                         <v-card-actions> 
                             <v-spacer/>  
                             <project-dialog
-                                :tableTitle = "title = 'SUB PROJECT TABLE MASTER FILE'"
+                                :tableTitle = "'SUB PROJECT TABLE MASTER FILE'"
                                 @updateSubProject = updateSubProject
                             />
                         </v-card-actions> 
@@ -104,7 +104,7 @@
                                 <v-text-field v-model="subProjectObj.sub_proj_id" label="Sub ID" density="compact" variant="outlined" readonly class="small-input"/>  
                             </v-col> 
                             <v-col cols="9" style="max-height: 60px;">
-                                <v-select   
+                                <v-autocomplete   
                                 v-model="selectedSubProject" 
                                 :items="subProjectItems"  
                                 :item-title="item => item.sub_proj_name"
@@ -117,8 +117,7 @@
                                 hide-details      
                                 clearable  
                                 class="small-select"
-                                ></v-select>
-                                
+                                />  
                                 <span style="color: red; font-size: xx-small;">{{subProjectObj.sub_proj_alias}}</span> 
                             </v-col>
 
@@ -144,54 +143,7 @@
                     </v-card-text> 
                 </v-card>
             </v-col>
-
-            <!-- <v-col cols="8"> 
-                <v-card-actions>
-                <v-spacer/>
-                <v-text-field
-                v-model="search" 
-                max-width="200px"
-                variant="outlined"  
-                density="compact"
-                label="Search"
-                prepend-inner-icon="mdi-magnify" 
-                hide-details
-                />
-                </v-card-actions>
-
-                <v-table>
-                    <thead>
-                        <tr>
-                            <th>Co Code</th>
-                            <th>Project Name</th>
-                            <th>Project Alias</th>
-                            <th>bldg_street</th>
-                            <th class="text-center"> Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(proj,i) in filteredItems" :key="i">
-                            <td>{{proj.coCode}}</td>
-                            <td>{{proj.companyName}}</td>
-                            <td>{{proj.coAlias}}</td>
-                            <td>{{proj.street}}</td>
-                            <td align="center"> 
-                                <v-tooltip text="EDIT" location="bottom" >
-                                    <template v-slot:activator="{ props }">
-                                        <v-btn @click="edit(proj,'EDIT')" v-bind="props" color="#CFD8DC" density="compact" icon="mdi-pencil" class="mr-4"></v-btn> 
-                                    </template>
-                                </v-tooltip>
-                                <v-tooltip text="ADD" location="bottom">
-                                    <template v-slot:activator="{ props }">
-                                        <v-btn @click="add(proj.coCode,'ADD')" v-bind="props" color="success" density="compact" icon="mdi-plus"></v-btn> 
-                                    </template>
-                                </v-tooltip> 
-                            </td>
-                        </tr>
-                    </tbody>
-                </v-table> 
-            </v-col> -->
-        </v-row>
+        </v-row> 
     </v-container> 
 </template>
 
@@ -199,7 +151,7 @@
 <script>
     import ProjectDialog from './dialog_components/ProjectDialog.vue';
     import axios from 'axios';   
-    import { mapState } from 'vuex';
+    import { mapState } from 'vuex'; 
 
     export default {
         components: { ProjectDialog },
@@ -233,7 +185,7 @@
             this.getData();
         },
 
-        methods: { 
+        methods: {  
             async getData(){
                 const projData = await axios.get('http://192.168.1.174:3000/myApi/project') 
                 this.projectItems = projData.data.project

@@ -92,10 +92,10 @@
                     </v-col>
                     <v-col cols="12">
                         <v-autocomplete   
-                            v-model="cityObj.prov_name" 
+                            v-model="cityObj.prov_id" 
                             :items="province"    
                             :item-title="item => item.prov_name"
-                            return-object
+                            :item-value="item => item.prov_id" 
                             label="Select province"   
                             :menu-props="{ scrim: true, scrollStrategy: 'close' }"
                             variant="outlined"
@@ -289,12 +289,12 @@
                     items-per-page="10"
                     fixed-header 
                     density="compact"  
-                > </v-data-table> 
-                    <!-- <template v-slot:[`item.actions`]="{ item }">
+                > 
+                    <template v-slot:[`item.actions`]="{ item }">
                         <v-btn @click="editItem(item)">Edit</v-btn>
-                        <v-btn @click="deleteItem(item)">Delete</v-btn>
-                    </template> -->
-                
+                        <!-- <v-btn @click="deleteItem(item)">Delete</v-btn> -->
+                    </template>
+                </v-data-table>  
             </v-card-text>  
         </v-card>
     </v-dialog>
@@ -307,14 +307,14 @@
     export default { 
         props:['fromProvince', 'fromCity', 'fromCitizen', 'fromSalutation', 'fromNOB', 'toolbarTitle', 'dataFromCustomerFiles'],
         emits:['updateProvince', 'updateCity', 'updateCitizen', 'updateSalutation', 'updateNOB'], 
-
+        //ddd
         data() {
             return {
                 search: '',
-                isLoading: true,
-                provinceDialog: false,
+                isLoading: true, 
                 openTableDialog: false,
                 flag: '',
+                provinceDialog: false,
                 provObj: {},
                 //city
                 cityDialog: false, 
@@ -373,8 +373,9 @@
                             {title: 'Province ID', align: 'start', key: 'prov_id', sortable: false},
                             {title: 'Province Name', align: 'start', key: 'prov_name', sortable: false},
                             {title: 'Status', align: 'start', key:'status_id', sortable: false},
+                            {title: 'actions', align: 'center', key:'actions', sortable: false},
                         ]
-                        this.customerData.data = this.province
+                        this.customerData.data = this.dataFromCustomerFiles
                         this.isLoading = false
                     }, 1500);
                 }else if(this.fromCity !== undefined){
@@ -385,8 +386,9 @@
                             {title: 'City Name', align: 'start', key: 'CityDesc', sortable: false},
                             {title: 'City prov id', align: 'start', key: 'city_prov', sortable: false},
                             {title: 'Status', align: 'start', key:'status_id', sortable: false},
+                            {title: 'actions', align: 'center', key:'actions', sortable: false},
                         ]
-                        this.customerData.data = this.city
+                        this.customerData.data = this.dataFromCustomerFiles
                         this.isLoading = false
                     }, 1500);
                 }else if(this.fromCitizen !== undefined){
@@ -397,6 +399,7 @@
                             {title: 'alias', align: 'start', key: 'CitizenshipCode', sortable: false},
                             {title: 'Description', align: 'start', key: 'CitizenshipDesc', sortable: false}, 
                             {title: 'Status', align: 'start', key:'status_id', sortable: false},
+                            {title: 'actions', align: 'center', key:'actions', sortable: false},
                         ]
                         this.customerData.data = this.dataFromCustomerFiles
                         this.isLoading = false
@@ -408,6 +411,7 @@
                             {title: 'salutation Code', align: 'start', key: 'SalutationCode', sortable: false},
                             {title: 'salutation desc', align: 'start', key: 'SalutationDesc', sortable: false}, 
                             {title: 'Status', align: 'start', key:'status_id', sortable: false},
+                            {title: 'actions', align: 'center', key:'actions', sortable: false},
                         ]
                         this.customerData.data = this.dataFromCustomerFiles
                         this.isLoading = false
@@ -419,6 +423,7 @@
                             {title: 'Code', align: 'start', key: 'NOBCode', sortable: false},
                             {title: 'description', align: 'start', key: 'NOBDesc', sortable: false}, 
                             {title: 'Status', align: 'start', key:'status_id', sortable: false},
+                            {title: 'actions', align: 'center', key:'actions', sortable: false},
                         ]
                         this.customerData.data = this.dataFromCustomerFiles
                         this.isLoading = false
@@ -442,6 +447,27 @@
                 }else if(this.fromNOB !== undefined){
                     this.NOBDialog = true
                 }  
+            },
+
+            editItem(val){
+                const editProvince = Object.hasOwn(val, "prov_id")
+                const editCity = Object.hasOwn(val, "CityCode")
+                const editCitizen = Object.hasOwn(val, "citizen_id")
+                const editSalut = Object.hasOwn(val, "SalutationCode")
+                const editNOB = Object.hasOwn(val, "NOBCode") 
+                if(editProvince){
+                    alert('province to be')
+                }else if(editCity){
+                    alert('city to be')
+                }else if(editCitizen){
+                    alert('editCitizen to be')
+                }else if(editSalut){
+                    alert('editSalut to be')
+                }else if(editNOB){
+                    alert('editNOB to be')
+                }else{
+                    alert('wala sa edittt na itu')
+                } 
             },
 
             insertData(payload){ 
